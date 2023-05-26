@@ -1,0 +1,45 @@
+#ColorWheel {
+    position: relative;
+    overflow: visible;
+    display: block;        
+    width: 500px; 
+    height: 500px; 
+    left: 100px;
+    top: 100px; 
+}
+
+#ConicGradient {
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    width: 100%; 
+    height: 100%; 
+    border-radius: 50%; 
+    box-sizing: border-box; 
+    background: conic-gradient(from 90deg, red, magenta, blue, aqua, lime, yellow, red);">
+}
+
+#RadialGradient {
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    width: 100%; 
+    height: 100%; 
+    border-radius: 50%; 
+    box-sizing: border-box; 
+    background: radial-gradient(circle closest-side, rgba(255, 255, 255, 1), transparent);
+}
+
+#WheelHandle {
+    position: absolute; 
+    /* transform: translate(265px, 140px); */
+    will-change: transform; 
+    /*top: -8px; 
+    left: -8px; */
+    top: 242px;
+    left: 480px;
+    width: 16px; 
+    height: 16px; 
+    overflow: visible;
+    /* background-color: transparent; */
+}
