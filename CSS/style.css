@@ -30,7 +30,7 @@
     background: radial-gradient(circle closest-side, rgba(255, 255, 255, 1), transparent);
 }
 
-#WheelHandle {
+#WheelSlider {
     position: absolute; 
     /* transform: translate(265px, 140px); */
     will-change: transform; 
