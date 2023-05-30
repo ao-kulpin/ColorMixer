@@ -1,9 +1,22 @@
-alert('script start');
+// alert('script start');
 
 const ColorWheel = {
     started: false,
     element: null,
     rect: null,
+    gradient:{
+        started: false,
+        element: null,
+
+        start() {
+            if (!this.started) {
+                this.element = document.getElementById('ConicGradient');
+                this.element.addEventListener('mousemove', (event)=>ColorWheel.sliderMove(event));
+
+                this.started = true;
+            }
+        }
+    },
     slider: {
         started: false,
         element: null,
@@ -16,8 +29,8 @@ const ColorWheel = {
             start() {
                 if (!this.started) {
                     this.element = document.getElementById('WheelSliderCenter');
-                    this.element.addEventListener('mousedown', (event)=>{ ColorWheel.centerDown(); })
-                    this.element.addEventListener('mouseup', (event)=>{ ColorWheel.centerUp(); })
+                    this.element.addEventListener('mousedown', (event)=>{ColorWheel.sliderDown();});
+                    this.element.addEventListener('mouseup', (event)=>{ColorWheel.sliderUp();});
                     this.started = true;
                 }
             }
@@ -37,22 +50,34 @@ const ColorWheel = {
         if (!this.started) {
             this.element = document.getElementById('ColorWheel');
             this.rect = this.element.getBoundingClientRect();
+            document.addEventListener('scroll', ()=>ColorWheel.onScroll());
             this.slider.start();
+            this.gradient.start();
             this.started = true;
         }
     },
 
-    centerDown() {
+    sliderDown() {
         this.slider.active = true;
         this.slider.center.element.setAttribute('stroke', '#000');
     },
 
-    centerUp() {
+    sliderUp() {
         this.slider.active = false;
         this.slider.center.element.setAttribute('stroke', '#FFF');
+    },
+    sliderMove(event) {
+
+        if (this.slider.active) {
+            this.slider.element.style.left = event.clientX - this.rect.left - this.slider.rect.width / 2;
+            this.slider.element.style.top = event.clientY - this.rect.top - this.slider.rect.height / 2;
+        }
+    },
+    onScroll() {
+        ColorWheel.rect = ColorWheel.element.getBoundingClientRect();
     }
 };
 
 ColorWheel.start();
 
-alert('script finish');
+// alert('script finish');
