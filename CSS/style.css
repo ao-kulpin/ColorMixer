@@ -6,8 +6,17 @@
     height: 500px; 
     left: 100px;
     top: 100px; 
+    background-color: yellow;
 }
 
+#HueDiv {
+    position: relative;
+    overflow: visible;
+    display: block;        
+    top: 120px; 
+    background-color: green;
+
+}
 #ConicGradient {
     position: absolute; 
     top: 0px; 
