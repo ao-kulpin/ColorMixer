@@ -15,8 +15,16 @@
     display: block;        
     top: 120px; 
     background-color: green;
-
 }
+
+#SaturationDiv {
+    position: relative;
+    overflow: visible;
+    display: block;        
+    top: 120px; 
+    background-color: lightblue;
+}
+
 #ConicGradient {
     position: absolute; 
     top: 0px; 
