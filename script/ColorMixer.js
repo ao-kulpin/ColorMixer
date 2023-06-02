@@ -90,6 +90,16 @@ const ColorWheel = {
         this.slider.center.element.setAttribute('stroke', '#FFF');
     },
     sliderMove(x, y) {
+        const distX = x - this.centerX;
+        const distY = y - this.centerY;
+
+        const r = Math.sqrt(distX * distX + distY * distY);
+
+        if (r - this.wheelRadius > 2) {
+            // the slider can't go out of th color wheel
+            return;
+        }
+
         this.slider.element.style.left = x - this.rect.left - this.slider.rect.width / 2;
         this.slider.element.style.top = y - this.rect.top - this.slider.rect.height / 2;
     },
@@ -125,6 +135,11 @@ const ColorWheel = {
 
         const r = Math.sqrt(distX * distX + distY * distY);
 
+        if (r - this.wheelRadius > 2) {
+            // the slider can't go out of th color wheel
+            return;
+        }
+
         const sinHue = (y - this.centerY) / r;
         const asinHue = Math.asin(sinHue) * 180 / Math.PI;
         let newHue;
@@ -157,12 +172,18 @@ const ColorWheel = {
 
     get saturation () {
         return this._saturation;
+    },
+
+    set saturation (val) {
+        this._saturation = val;
+        this.sliderReset();
     }
 }  // end of ColorWheel
 
 const Hue = {
     started: false,
     elementText: null,
+    invalidText: false,
     _value: 0,
     start() {
         if (!this.started) {
@@ -177,18 +198,29 @@ const Hue = {
     set value (val) {
         this._value = val;
         this.elementText.value = val;
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
     },
     onChangeText() {
-        this._value = this.elementText.value;
-        Master.onChangeHue();
-
+        const n = parseDecInt(this.elementText.value, 0, 360);
+        if (isNaN(n)) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            this._value = n;
+            Master.onChangeHue();
+        }
     }
 }  // end of Hue
 
 const Saturation = {
     started: false,
     elementText: null,
+    invalidText: false,
     _value: 100,
+
     start() {
         if (!this.started) {
             this.elementText = document.getElementById('SaturationText');
@@ -196,16 +228,33 @@ const Saturation = {
             this.started = true;
         }
     },
+
+    get value () {
+        return this._value;
+    },
+
     set value (val) {
         this._value = val;
         this.elementText.value = val;
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
     },
     onChangeText() {
-
+        const n = parseDecInt(this.elementText.value, 0, 100);
+        if (isNaN(n)) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            this._value = n;
+            Master.onChangeSaturation();
+        }
     }
-
-
 } // end of Saturation
+
+const initHue = 45;
+const initSaturation = 50;
 
 const Master = {
     started: false,
@@ -214,6 +263,13 @@ const Master = {
             ColorWheel.start();
             Hue.start();
             Saturation.start();
+
+            ColorWheel.hue = initHue;
+            ColorWheel.saturation = initSaturation;
+
+            Hue.value = initHue;
+            Saturation.value = initSaturation;
+
             this.started = true;
         }
     },
@@ -225,9 +281,36 @@ const Master = {
 
     onChangeHue () {
         ColorWheel.hue = Hue.value;
+    },
+
+    onChangeSaturation () {
+        ColorWheel.saturation = Saturation.value;
+    }
+} // end of Master
+
+const simpleDecInt = /^\s*[\+\-]?[0-9]*$/;
+
+function parseDecInt(text, min, max) {
+    if (!simpleDecInt.test(text)) {
+        return NaN;
     }
 
-} // end of Master
+    const val = parseInt(text, 10);
+    if (isNaN(val) || val < min || val > max) {
+        return NaN;
+    } else {
+        return val;
+    }
+}
+
+function markInvalidText(element) {
+    element.style.textDecorationLine = 'line-through';
+    element.style.textDecorationColor = 'red';
+}
+
+function unmarkInvalidText(element) {
+    element.style.textDecorationLine = 'none';
+}
 
 Master.start();
 
