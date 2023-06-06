@@ -60,3 +60,27 @@
     overflow: visible;
     /* background-color: transparent; */
 }
+
+#HueText {
+    llldisplay: inline;
+}
+
+#HueRanger {
+    position: relative;
+    display: inline-block;
+    flllloat: left;
+    background-color: chocolate;
+    width: 280px;
+    height: 1em;
+    top: 0.25em;
+    border: solid;
+    border-radius: 0.5em;
+    border-width: 1px;
+    border-color: black;
+}
+
+#HueSlider {
+    background-color: transparent;
+    width: 1em;
+    height: 1em;
+}

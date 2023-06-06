@@ -6,16 +6,24 @@
                     <div id="ConicGradient">  
                         <div id="RadialGradient">
                           <svg id="WheelSlider">
-                              <circle id="BigCircle" cx="8" cy="8" r="8" fill="none" stroke-width="2" stroke="#000"></circle>
+                              <circle cx="8" cy="8" r="8" fill="none" stroke-width="2" stroke="#000"></circle>
                               <circle id="WheelSliderCenter" cx="8" cy="8" r="6" fill="rgba(0,0,0,0)" stroke-width="2" stroke="#fff"></circle>
                           </svg>
                         </div>
                     </div>
             </div>
             <div id="HueDiv">
-              <p>
-                Hue (0-360 degrees): <input type="text" value="123" id="HueText" >
-              </p>
+              <span>
+                Hue (0-360 degrees): 
+              </span>
+              <div id="HueRanger">
+                <svg id="HueSlider">
+                  <circle cx="0.5em" cy="0.5em" r="0.4em" fill="none" stroke-width="2" stroke="#000"></circle>
+                  <circle cx="0.5em" cy="0.5em" r="0.2em" fill="rgba(0,0,0,0)" stroke-width="2" stroke="#fff"></circle>
+                </svg>
+
+              </div>
+              <input type="text" value="123" id="HueText" >
             </div>
             <div id="SaturationDiv">
               <p>
