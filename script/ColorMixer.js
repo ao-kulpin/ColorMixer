@@ -204,8 +204,7 @@ const Hue = {
         return this._value;
     },
     set value (val) {
-        this._value = val;
-        this.elementText.value = this.rangeControl.value = val;
+        this._value = this.elementText.value = this.rangeControl.value = val;
         this.invalidText = false;
         unmarkInvalidText(this.elementText);
     },
@@ -227,12 +226,20 @@ const Saturation = {
     started: false,
     elementText: null,
     invalidText: false,
+    rangeControl: null,
     _value: 100,
 
     start() {
         if (!this.started) {
             this.elementText = document.getElementById('SaturationText');
             this.elementText.addEventListener('input', (event) => Saturation.onChangeText());
+            this.rangeControl = new RangeControl(0, 100, 'SaturRanger', 'SaturSlider', 'SaturSliderCenter',
+              () => {
+                this._value = this.elementText.value = this.rangeControl.value;
+                Master.onChangeSaturation();
+              });
+            this.rangeControl.start();
+
             this.started = true;
         }
     },
@@ -242,8 +249,7 @@ const Saturation = {
     },
 
     set value (val) {
-        this._value = val;
-        this.elementText.value = val;
+        this._value = this.elementText.value = this.rangeControl.value = val;
         this.invalidText = false;
         unmarkInvalidText(this.elementText);
     },
