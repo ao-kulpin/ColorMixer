@@ -82,12 +82,12 @@ const ColorWheel = {
 
     sliderActivate() {
         this.slider.active = true;
-        this.slider.center.element.setAttribute('stroke', '#000');
+        this.slider.center.element.setAttribute('stroke', '#FFF');
     },
 
     sliderDeactivate() {
         this.slider.active = false;
-        this.slider.center.element.setAttribute('stroke', '#FFF');
+        this.slider.center.element.setAttribute('stroke', '#000');
     },
     sliderMove(x, y) {
         const distX = x - this.centerX;

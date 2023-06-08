@@ -49,16 +49,6 @@
 
 #WheelSlider {
     position: absolute; 
-    /* transform: translate(265px, 140px); */
-    will-change: transform; 
-    /*top: -8px; 
-    left: -8px; */
-    top: 242px;
-    left: 480px;
-    width: 16px; 
-    height: 16px; 
-    overflow: visible;
-    /* background-color: transparent; */
 }
 
 
@@ -73,6 +63,10 @@
     border-radius: 0.5em;
     border-width: 1px;
     border-color: black;
+}
+
+#SaturRanger {
+/*    width: 250px;  */
 }
 
 .slider {
