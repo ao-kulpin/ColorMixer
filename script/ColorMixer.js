@@ -261,7 +261,7 @@ const Saturation = {
         } else {
             this.invalidText = false;
             unmarkInvalidText(this.elementText);
-            this._value = n;
+            this._value = this.rangeControl.value = n;
             Master.onChangeSaturation();
         }
     }
