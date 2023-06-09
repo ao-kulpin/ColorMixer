@@ -267,8 +267,10 @@ const Saturation = {
     }
 } // end of Saturation
 
-const initHue = 45;
-const initSaturation = 50;
+const Init = {
+    hue: 45,
+    saturation: 50
+}
 
 const Master = {
     started: false,
@@ -278,11 +280,11 @@ const Master = {
             Hue.start();
             Saturation.start();
 
-            ColorWheel.hue = initHue;
-            ColorWheel.saturation = initSaturation;
+            ColorWheel.hue = Init.hue;
+            ColorWheel.saturation = Init.saturation;
 
-            Hue.value = initHue;
-            Saturation.value = initSaturation;
+            Hue.value = Init.hue;
+            Saturation.value = Init.saturation;            
 
             this.started = true;
         }

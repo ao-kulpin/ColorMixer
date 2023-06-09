@@ -1,3 +1,15 @@
+.wrap {
+    width: 100%;
+    background-color: grey;
+}
+
+#UpperHalfDiv {
+    display: flex;
+    margin: 0 auto;
+    width: 1000px;
+    background-color: blueviolet;
+}
+
 #ColorWheel {
     position: relative;
     overflow: visible;
@@ -7,6 +19,39 @@
     left: 0px;
     top: 0px; 
     background-color: yellow;
+}
+
+#ChoiseDiv {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    background-color: aquamarine;
+}
+
+#Choise {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    top: 50px;
+    left: 50;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    border-radius: 10%;
+    background-color: #00FF0080;
+}
+
+#Background {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    top: 100;
+    left: 100;
+    border: solid;
+    border-color: black;
+    border-width: 1px;
+    border-radius: 10%;
+    background-color: lightgray;
 }
 
 #HueDiv {
