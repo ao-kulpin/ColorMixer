@@ -21,14 +21,14 @@
     background-color: yellow;
 }
 
-#ChoiseDiv {
+#ChoiceDiv {
     position: relative;
     width: 500px;
     height: 500px;
     background-color: aquamarine;
 }
 
-#Choise {
+#Choice {
     position: absolute;
     width: 350px;
     height: 350px;
@@ -38,7 +38,7 @@
     border-color: black;
     border-width: 1px;
     border-radius: 10%;
-    background-color: #00FF0080;
+    background-color: hsla(120,60%,45%,20%);
 }
 
 #Background {

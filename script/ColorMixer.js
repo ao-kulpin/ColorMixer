@@ -267,6 +267,67 @@ const Saturation = {
     }
 } // end of Saturation
 
+const Choice = {
+    started: false,
+    elementChoice: null,
+    elementBackground: null,
+    _hue: 0,
+    _saturation: 100,
+    _lightness: 50,
+    _alpha: 1,
+
+    start() {
+        if (!this.started) {
+            this.elementChoice = document.getElementById('Choice');
+            this.elementBackground = document.getElementById('Background');
+
+            this.started = true;
+        }
+    },
+
+    get hue() {
+        return this._hue;
+    },
+
+    set hue (val) {
+        this._hue = val;
+        this.updateChoice();
+    },
+
+    get saturation () {
+        return this._saturation;
+    },
+
+    set saturation (val) {
+        this._saturation = val;
+        this.updateChoice();
+    },
+
+    get lightness () {
+        return this._lightness;
+    },
+
+    set lightness (val) {
+        this._lightness = val;
+        this.updateChoice();
+    },
+
+    get alpha () {
+        return this._alpha;
+    },
+
+    set alpha (val) {
+        this._alpha = val;
+    },
+
+    updateChoice() {
+        const s = 'hsla(' + this._hue + ',' + this._saturation + '%,' + this._lightness + '%,' + this._alpha + ')';
+        this.elementChoice.style.backgroundColor = s;
+    }
+
+
+}  // end of Choice
+
 const Init = {
     hue: 45,
     saturation: 50
@@ -279,28 +340,30 @@ const Master = {
             ColorWheel.start();
             Hue.start();
             Saturation.start();
+            Choice.start();
 
+            /*
             ColorWheel.hue = Init.hue;
             ColorWheel.saturation = Init.saturation;
 
             Hue.value = Init.hue;
             Saturation.value = Init.saturation;            
-
+            */
             this.started = true;
         }
     },
 
     onChangeColorWheel () {
-        Hue.value = ColorWheel.hue;
-        Saturation.value = ColorWheel.saturation;
+        Hue.value = Choice.hue = ColorWheel.hue;
+        Saturation.value = Choice.saturation = ColorWheel.saturation;
     },
 
     onChangeHue () {
-        ColorWheel.hue = Hue.value;
+        ColorWheel.hue = Choice.hue = Hue.value;
     },
 
     onChangeSaturation () {
-        ColorWheel.saturation = Saturation.value;
+        ColorWheel.saturation = Choice.saturation = Saturation.value;
     }
 } // end of Master
 
