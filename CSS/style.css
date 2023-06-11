@@ -7,6 +7,7 @@
     display: flex;
     margin: 0 auto;
     width: 1000px;
+    height: 500px;
     background-color: blueviolet;
 }
 
@@ -14,8 +15,8 @@
     position: relative;
     overflow: visible;
     display: block;        
-    width: 500px; 
-    height: 500px; 
+    width: 50%; 
+    height: 100%; 
     left: 0px;
     top: 0px; 
     background-color: yellow;
@@ -23,17 +24,17 @@
 
 #ChoiceDiv {
     position: relative;
-    width: 500px;
-    height: 500px;
+    width: 50%;
+    height: 100%;
     background-color: aquamarine;
 }
 
 #Choice {
     position: absolute;
-    width: 350px;
-    height: 350px;
-    top: 50px;
-    left: 50;
+    width: 70%;
+    height: 70%;
+    top: 10%;
+    left: 10%;
     border: solid;
     border-color: black;
     border-width: 1px;
@@ -43,10 +44,10 @@
 
 #Background {
     position: absolute;
-    width: 350px;
-    height: 350px;
-    top: 100;
-    left: 100;
+    width: 70%;
+    height: 70%;
+    top: 20%;
+    left: 20%;
     border: solid;
     border-color: black;
     border-width: 1px;

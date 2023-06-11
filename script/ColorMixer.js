@@ -342,13 +342,9 @@ const Master = {
             Saturation.start();
             Choice.start();
 
-            /*
-            ColorWheel.hue = Init.hue;
-            ColorWheel.saturation = Init.saturation;
+            ColorWheel.hue = Choice._hue = Hue.value =Init.hue;
+            ColorWheel.saturation = Choice.saturation = Saturation.value = Init.saturation;
 
-            Hue.value = Init.hue;
-            Saturation.value = Init.saturation;            
-            */
             this.started = true;
         }
     },
