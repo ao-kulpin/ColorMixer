@@ -5,92 +5,66 @@ const ColorWheel = {
     element: null,
     context2d: null,
     rect: null,
+    wheelRadius: 10,
+    sliderActive: false,
     centerX: 0,
     centerY: 0,
     _hue: 0,
     _saturation: 100,
-    wheelRadius: 10,
-    gradient:{
-        started: false,
-        element: null,
-
-        start() {
-            if (!this.started) {
-                this.element = document.getElementById('ConicGradient');
-                this.element.addEventListener('mousedown', 
-                   (event)=> {
-                      ColorWheel.sliderActivate();
-                      ColorWheel.sliderMove(event.clientX, event.clientY);
-                      ColorWheel.getHueAndSaturation(event.clientX, event.clientY);
-                      Master.onChangeColorWheel();
-                   }
-                );
-                this.element.addEventListener('mousemove', 
-                   (event)=> {
-                      if (ColorWheel.slider.active) {
-                        ColorWheel.sliderMove(event.clientX, event.clientY);
-                        ColorWheel.getHueAndSaturation(event.clientX, event.clientY);
-                        Master.onChangeColorWheel();
-                      }
-                   }
-                );
-                this.element.addEventListener('mouseup', 
-                   (event)=> {
-                    ColorWheel.sliderDeactivate();
-                   }
-                );
-
-                this.started = true;
-            }
-        }
-    },
-    slider: {
-        started: false,
-        element: null,
-        rect: null,
-        active:false,
-
-        center: {
-            started: false,
-            element: null,
-            start() {
-                if (!this.started) {
-                    this.element = document.getElementById('WheelSliderCenter');
-                    this.started = true;
-                }
-            }
-        
-        },
-
-        start() {
-            if (!this.started) {
-                this.element = document.getElementById('WheelSlider');
-                this.center.start();
-                this.started = true;
-            }
-        }
-    },
+    _lightness: 50,
     start() {
         if (!this.started) {
-            this.slider.start();
-            this.gradient.start();
             this.element = document.getElementById('ColorWheel');
+
+            // Fix size of the canvas
+            this.element.width = this.element.clientWidth;
+            this.element.height = this.element.clientHeight;
+
             this.context2d = this.element.getContext("2d");
             this.getViewPort();
             document.addEventListener('scroll', ()=>ColorWheel.onScroll());
+
+            this.element.addEventListener('mousedown',
+                               (event) => {
+                                  ColorWheel.sliderActivate();
+                                  ColorWheel.draw();
+                                  ColorWheel.sliderMove(event.clientX, event.clientY);
+                                  ColorWheel.getHueAndSaturation(event.clientX, event.clientY);
+                                  Master.onChangeColorWheel();
+                               }
+            );
+
+            this.element.addEventListener('mousemove', 
+                               (event)=> {
+                                  if (ColorWheel.sliderActive) {
+                                    ColorWheel.draw();
+                                    ColorWheel.sliderMove(event.clientX, event.clientY);
+                                    ColorWheel.getHueAndSaturation(event.clientX, event.clientY);
+                                    Master.onChangeColorWheel();
+                                  }
+                               }
+                            );
+
+            this.element.addEventListener('mouseup', 
+                            (event)=> {
+                                ColorWheel.sliderDeactivate();
+                                ColorWheel.draw();
+                                ColorWheel.sliderMove(event.clientX, event.clientY);
+                        }
+            );
+
             this.started = true;
         }
     },
 
     sliderActivate() {
-        this.slider.active = true;
-        this.slider.center.element.setAttribute('stroke', '#FFF');
+        this.sliderActive = true;
     },
 
     sliderDeactivate() {
-        this.slider.active = false;
-        this.slider.center.element.setAttribute('stroke', '#000');
+        this.sliderActive = false;
     },
+
     sliderMove(x, y) {
         const distX = x - this.centerX;
         const distY = y - this.centerY;
@@ -102,8 +76,10 @@ const ColorWheel = {
             return;
         }
 
-        this.slider.element.style.left = x - this.rect.left - this.slider.rect.width / 2;
-        this.slider.element.style.top = y - this.rect.top - this.slider.rect.height / 2;
+        this.drawSlider(x, y);
+
+        // this.slider.element.style.left = x - this.rect.left - this.slider.rect.width / 2;
+        // this.slider.element.style.top = y - this.rect.top - this.slider.rect.height / 2;
     },
     sliderReset () {
         const r = this.wheelRadius * this._saturation / 100;
@@ -117,7 +93,7 @@ const ColorWheel = {
     },
     getViewPort() {
         this.rect = this.element.getBoundingClientRect();
-        this.slider.rect = ColorWheel.slider.element.getBoundingClientRect();
+        // this.slider.rect = ColorWheel.slider.element.getBoundingClientRect();
 
         this.centerX = (this.rect.left + this.rect.right) / 2;
         this.centerY = (this.rect.top + this.rect.bottom) / 2;
@@ -164,11 +140,47 @@ const ColorWheel = {
     },
 
     draw() {
+        this.drawConicGradient();
+    },
+
+    drawConicGradient() {
+        const r = this.wheelRadius;
+        const grad = this.context2d.createConicGradient(0, r, r);
+
+        for (let angle = 0; angle < 361; angle +=60) {
+            const hslColor = `hsl(${angle},100%,${this._lightness}%)`
+            grad.addColorStop(angle/360, hslColor);
+        }
+
         this.context2d.beginPath();
-        const r = this.rect.width / 2;
-        this.context2d.arc(r, r, r/2, 0, 2 * Math.PI);
+        this.context2d.arc(r, r, r, 0, 2 * Math.PI)
+
+        this.context2d.fillStyle = grad;
+        this.context2d.fill();
+    },
+
+    sliderProps: {
+        blackRadius: 10,
+        blackWidth: 4,
+        whiteRadius: 5,
+        whiteWidth: 2,
+    },
+
+    drawSlider(x, y) {
+        const canvasX = x - this.rect.left;
+        const canvasY = y - this.rect.top;
+
+        this.context2d.beginPath();
+        this.context2d.arc(canvasX, canvasY, this.sliderProps.blackRadius, 0, 2 * Math.PI);
+        this.context2d.lineWidth = this.sliderProps.blackWidth;
+        this.context2d.strokeStyle = this.sliderActive ? 'white' : 'black';
         this.context2d.stroke();
 
+        this.context2d.beginPath();
+        this.context2d.arc(canvasX, canvasY, this.sliderProps.whiteRadius, 0, 2 * Math.PI);
+        this.context2d.lineWidth = this.sliderProps.whiteWidth;
+        this.context2d.strokeStyle = this.sliderActive ? 'black' : 'white';
+        this.context2d.stroke();
     },
 
     get hue () {
@@ -426,7 +438,7 @@ function RangeControl (min, max, id, idSlider, idCenter, onChange) {
                 this.elementSlider = document.getElementById(this.idSlider);
                 this.elementCenter = document.getElementById(this.idCenter);
                 this.getViewPort();
-                this.element.addEventListener('mousedown', 
+                this.element.addEventListener('mousedown',
                    (event)=> {
                       this.sliderActivate();
                       this.sliderMove(event.clientX);
