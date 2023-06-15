@@ -3,6 +3,7 @@
 const ColorWheel = {
     started: false,
     element: null,
+    context2d: null,
     rect: null,
     centerX: 0,
     centerY: 0,
@@ -74,6 +75,7 @@ const ColorWheel = {
             this.slider.start();
             this.gradient.start();
             this.element = document.getElementById('ColorWheel');
+            this.context2d = this.element.getContext("2d");
             this.getViewPort();
             document.addEventListener('scroll', ()=>ColorWheel.onScroll());
             this.started = true;
@@ -161,12 +163,21 @@ const ColorWheel = {
         this._saturation = Math.min(Math.floor(r * 100 / this.wheelRadius), 100);;
     },
 
+    draw() {
+        this.context2d.beginPath();
+        const r = this.rect.width / 2;
+        this.context2d.arc(r, r, r/2, 0, 2 * Math.PI);
+        this.context2d.stroke();
+
+    },
+
     get hue () {
         return this._hue;
     },
 
     set hue (val) {
         this._hue = val;
+        this.draw();
         this.sliderReset();
     },
 
@@ -176,6 +187,7 @@ const ColorWheel = {
 
     set saturation (val) {
         this._saturation = val;
+        this.draw();
         this.sliderReset();
     }
 }  // end of ColorWheel
