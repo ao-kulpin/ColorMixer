@@ -33,8 +33,8 @@ const ColorWheel = {
                                     if (this.isInWheel(x, y)) {
                                         this.sliderActivate();
                                         this.sliderMove(x, y);
-                                        this.draw();
                                         this.getHueAndSaturation(x, y);
+                                        this.draw();
                                         Master.onChangeColorWheel();
                                     }
                                }
@@ -45,15 +45,10 @@ const ColorWheel = {
                                   const x = event.clientX;
                                   const y = event.clientY;
                                   if (this.sliderActive) {
-                                    if (this.isInWheel(x, y)) {
-                                        this.sliderMove(x, y);
-                                        this.draw();
-                                        this.getHueAndSaturation(x, y);
-                                        Master.onChangeColorWheel();
-                                    } else {
-                                        this.sliderDeactivate();
-                                        this.draw();
-                                            }
+                                    this.sliderMove(x, y);
+                                    this.getHueAndSaturation(x, y);
+                                    this.draw();
+                                    Master.onChangeColorWheel();
                                   }
                                }
                             );
@@ -81,15 +76,22 @@ const ColorWheel = {
         if (this.isInWheel(x,y)) {
             this.sliderX = x;
             this.sliderY = y;
+        } else {
+            const r = this.distance(x, y, this.centerX, this.centerY);
+            const k = this.wheelRadius / r;
+            this.sliderX = this.centerX + (x - this.centerX) * k;
+            this.sliderY = this.centerY + (y - this.centerY) * k;
         }
     },
 
-    isInWheel (x, y) {
-        const distX = x - this.centerX;
-        const distY = y - this.centerY;
-        const r2 = distX * distX + distY * distY;
-        return r2 <= this.wheelRadius * this.wheelRadius;
+    distance(x0, y0, x1, y1) {
+        const distX = x1 - x0;
+        const distY = y1 - y0;
+        return Math.sqrt(distX * distX + distY * distY);
+    },
 
+    isInWheel (x, y) {
+        return this.distance(x, y, this.centerX, this.centerY) <= this.wheelRadius;
     },
 
     toCanvasX(screenX) {
@@ -127,15 +129,7 @@ const ColorWheel = {
             return;
         }
 
-        const distX = x - this.centerX;
-        const distY = y - this.centerY;
-
-        let r = Math.sqrt(distX * distX + distY * distY);
-
-        if (r/this.wheelRadius > 1) {
-            // the slider can't go out of th color wheel
-            r = this.wheelRadius;
-        }
+        let r = this.distance(x, y, this.centerX, this.centerY);
 
         const sinHue = (y - this.centerY) / r;
         const asinHue = Math.asin(sinHue) * 180 / Math.PI;
