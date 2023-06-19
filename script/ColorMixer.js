@@ -148,7 +148,7 @@ const ColorWheel = {
             }
         }
 
-        this._hue = Math.floor(newHue);
+        this._hue = newHue;
         this._saturation = Math.min(Math.floor(r * 100 / this.wheelRadius), 100);;
     },
 
@@ -249,7 +249,7 @@ const ColorWheel = {
     },
 
     get hue () {
-        return this._hue;
+        return Math.floor(this._hue);
     },
 
     set hue (val) {
