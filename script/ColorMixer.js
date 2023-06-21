@@ -205,12 +205,14 @@ const ColorWheel = {
             // the slider is the center
             return;
         }
+
+        const lineColor = this._lightness < 50 ? 'white' : 'black';
         const centerX = this.toCanvasX(this.centerX);
         const centerY = this.toCanvasY(this.centerY);
 
         this.context2d.beginPath();
         this.context2d.lineWidth = 1;
-        this.context2d.strokeStyle = 'black';
+        this.context2d.strokeStyle = lineColor;
 
         this.context2d.moveTo(centerX + this.wheelRadius, centerY);
         this.context2d.lineTo(centerX, centerY);
@@ -266,7 +268,17 @@ const ColorWheel = {
         this._saturation = val;
         this.sliderReset();
         this.draw();
-    }
+    },
+    
+    get lightness () {
+        return this._lightness;
+    },
+
+    set lightness (val) {
+        this._lightness = val;
+        this.draw();
+    },
+
 }  // end of ColorWheel
 
 const Hue = {
@@ -356,6 +368,52 @@ const Saturation = {
     }
 } // end of Saturation
 
+const Lightness = {
+    started: false,
+    elementText: null,
+    invalidText: false,
+    rangeControl: null,
+    _value: 50,
+    start() {
+        if (!this.started) {
+            this.elementText = document.getElementById('LightText');
+            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this.rangeControl = new RangeControl(0, 100, 'LightRanger', 'LightSlider', 'LightSliderCenter',
+              () => {
+                this._value = this.elementText.value = this.rangeControl.value;
+                Master.onChangeLightness();
+              });
+            this.rangeControl.start();
+
+            this.started = true;
+        }
+    },
+    onChangeText() {
+        const n = parseDecInt(this.elementText.value, 0, 100);
+        if (isNaN(n)) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            this._value = this.rangeControl.value = n;
+            Master.onChangeLightness();
+        }
+    },
+
+    get value () {
+        return this._value;
+    },
+
+    set value (val) {
+        this._value = this.elementText.value = this.rangeControl.value = val;
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
+    },
+
+
+} // end of Lightness
+
 const Choice = {
     started: false,
     elementChoice: null,
@@ -419,7 +477,8 @@ const Choice = {
 
 const Init = {
     hue: 45,
-    saturation: 50
+    saturation: 50,
+    lightness: 50
 }
 
 const Master = {
@@ -429,10 +488,12 @@ const Master = {
             ColorWheel.start();
             Hue.start();
             Saturation.start();
+            Lightness.start();
             Choice.start();
 
             ColorWheel.hue = Choice._hue = Hue.value =Init.hue;
             ColorWheel.saturation = Choice.saturation = Saturation.value = Init.saturation;
+            ColorWheel.lightness = Lightness.value = Init.lightness;
 
             this.started = true;
         }
@@ -449,6 +510,10 @@ const Master = {
 
     onChangeSaturation () {
         ColorWheel.saturation = Choice.saturation = Saturation.value;
+    },
+
+    onChangeLightness () {
+        ColorWheel.lightness = Choice.lightness = Lightness.value;
     }
 } // end of Master
 

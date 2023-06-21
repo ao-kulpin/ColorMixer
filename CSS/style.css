@@ -55,55 +55,32 @@
     background-color: lightgray;
 }
 
-#HueDiv {
+#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv {
     position: relative;
     overflow: visible;
     display: block;        
     top: 0.5em; 
+}
+
+#HueDiv {
     background-color: green;
 }
 
 #SaturationDiv {
-    position: relative;
-    overflow: visible;
-    display: block;        
-    top: 0.5em; 
     background-color: lightblue;
 }
 
-#ConicGradient {
-    position: absolute; 
-    top: 0px; 
-    left: 0px; 
-    width: 100%; 
-    height: 100%; 
-    border-radius: 50%; 
-    box-sizing: border-box; 
-    background: conic-gradient(from 90deg,
-     hsl(0, 100%, 50%),
-     hsl(60, 100%, 50%),
-     hsl(120, 100%, 50%),
-     hsl(180, 100%, 50%),
-     hsl(240, 100%, 50%),
-     hsl(300, 100%, 50%),
-     hsl(360, 100%, 50%));
+#LightDiv {
+    background-color: lightgreen;
 }
 
-#RadialGradient {
-    position: absolute; 
-    top: 0px; 
-    left: 0px; 
-    width: 100%; 
-    height: 100%; 
-    border-radius: 50%; 
-    box-sizing: border-box; 
-    background: radial-gradient(circle closest-side, rgba(255, 255, 255, 1), transparent);
+#AlphaDiv {
+    background-color: lightgoldenrodyellow;
 }
 
 #WheelSlider {
     position: absolute; 
 }
-
 
 .ranger {
     position: relative;

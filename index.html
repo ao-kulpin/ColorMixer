@@ -39,6 +39,34 @@
               </div>
               <input type="text" value="100" id="SaturationText" >
           </div>
+          <div id="LightDiv">
+            <span>
+              Lightness (0-100%): 
+            </span>    
+              
+            <div id="LightRanger" class="ranger">
+              <svg id="LightSlider" class="slider">
+                <circle id="LightSliderCenter" cx="0.5em" cy="0.5em" r="0.4em" fill="none" stroke-width="2" stroke="#000"></circle>
+                <circle cx="0.5em" cy="0.5em" r="0.2em" fill="rgba(0,0,0,0)" stroke-width="2" stroke="#fff"></circle>
+              </svg>                
+            </div>
+            <input type="text" value="100" id="LightText" >
+          </div>
+
+          <div id="AlphaDiv">
+            <span>
+              Alpha (0-1): 
+            </span>    
+              
+            <div id="AlphaRanger" class="ranger">
+              <svg id="AlphaSlider" class="slider">
+                <circle id="AlphaSliderCenter" cx="0.5em" cy="0.5em" r="0.4em" fill="none" stroke-width="2" stroke="#000"></circle>
+                <circle cx="0.5em" cy="0.5em" r="0.2em" fill="rgba(0,0,0,0)" stroke-width="2" stroke="#fff"></circle>
+              </svg>                
+            </div>
+            <input type="text" value="0.5" id="AlphaText" >
+          </div>
+
 
         </div>
       <link rel="stylesheet" href="./CSS/style.css">
