@@ -10,6 +10,13 @@ const AngleProps = {
     darkColor: 'black'
 }
 
+const SliderProps = {
+    radius1: 6,
+    width1: 2,
+    radius2: 3,
+    width2: 1,
+}
+
 const ColorWheel = {
     started: false,
     element: null,
@@ -20,8 +27,6 @@ const ColorWheel = {
     sliderActive: false,
     centerX: 0,
     centerY: 0,
-    sliderX: 0,
-    sliderY: 0,
     _hue: 0,
     _saturation: 100,
     _lightness: 50,
@@ -173,31 +178,27 @@ const ColorWheel = {
         this.context2d.fill();
     },
 
-    SliderProps: {
-        blackRadius: 7,
-        blackWidth: 2,
-        whiteRadius: 4,
-        whiteWidth: 2,
-    },
-
     drawSlider() {  // rotated with ray 2
         const centerX = this.toCanvasX(this.centerX);
         const centerY = this.toCanvasY(this.centerY);
         const sliderX = centerX + this.sliderR;
+        
+        const color1 = this._lightness < 50 ? AngleProps.lightColor : AngleProps.darkColor;
+        const color2 = this._lightness >= 50 ? AngleProps.lightColor : AngleProps.darkColor;
+
 
         this.context2d.beginPath();
-        this.context2d.arc(sliderX, centerX, this.SliderProps.blackRadius, 0, 2 * Math.PI);
-        this.context2d.lineWidth = this.SliderProps.blackWidth;
-        this.context2d.strokeStyle = this.sliderActive ? 'white' : 'black';
+        this.context2d.arc(sliderX, centerX, SliderProps.radius1, 0, 2 * Math.PI);
+        this.context2d.lineWidth = SliderProps.width1;
+        this.context2d.strokeStyle = this.sliderActive ? color2 : color1;
         this.context2d.stroke();
 
         this.context2d.beginPath();
-        this.context2d.arc(sliderX, centerX, this.SliderProps.whiteRadius, 0, 2 * Math.PI);
-        this.context2d.lineWidth = this.SliderProps.whiteWidth;
-        this.context2d.strokeStyle = this.sliderActive ? 'black' : 'white';
+        this.context2d.arc(sliderX, centerX, SliderProps.radius2, 0, 2 * Math.PI);
+        this.context2d.lineWidth = SliderProps.width2;
+        this.context2d.strokeStyle = this.sliderActive ? color1 : color2;
         this.context2d.stroke();
     },
-
     
     drawHueAngle() {
         if (this._saturation < 1e-1) {
@@ -227,10 +228,6 @@ const ColorWheel = {
                                 centerY - AngleProps.arrowWidth);
         this.context2d.fill();
        
-
-        const sliderX = this.toCanvasX(this.sliderX);
-        const sliderY = this.toCanvasY(this.sliderY);
-
         const sliderR = this.sliderR;
 
         // rotation of the movable ray
@@ -243,19 +240,19 @@ const ColorWheel = {
         let x = centerX;
         let y = centerY;
 
-        if (sliderR < this.SliderProps.blackRadius) {
+        if (sliderR < SliderProps.radius1) {
             // the slider is close to the center of the wheel
-            x = centerX + sliderR + this.SliderProps.blackRadius;
+            x = centerX + sliderR + SliderProps.radius1;
             this.context2d.moveTo(x, y);
             x = centerX + this.wheelRadius;
             this.context2d.lineTo(x, y);
         } else {
             this.context2d.moveTo(x, y);
-            x = centerX + sliderR - this.SliderProps.blackRadius;
+            x = centerX + sliderR - SliderProps.radius1;
             this.context2d.lineTo(x, y);
-            if (sliderR + this.SliderProps.blackRadius < this.wheelRadius) {
+            if (sliderR + SliderProps.radius1 < this.wheelRadius) {
                 // the slider is inside the wheel
-                x = centerX + sliderR + this.SliderProps.blackRadius;
+                x = centerX + sliderR + SliderProps.radius1;
                 this.context2d.moveTo(x, y);
                 x = centerX + this.wheelRadius;
                 this.context2d.lineTo(x, y);
@@ -264,9 +261,9 @@ const ColorWheel = {
         }
         this.context2d.stroke();
 
-        if (sliderR + this.SliderProps.blackRadius < this.wheelRadius) {
+        if (sliderR + SliderProps.radius1 < this.wheelRadius) {
             // draw arrow 2
-            const k = Math.min(this.wheelRadius - sliderR - this.SliderProps.blackRadius, AngleProps.arrowHeight)/AngleProps.arrowHeight;
+            const k = Math.min(this.wheelRadius - sliderR - SliderProps.radius1, AngleProps.arrowHeight)/AngleProps.arrowHeight;
             const arrowHeight = AngleProps.arrowHeight * k;
             const arrowWidth = AngleProps.arrowWidth * k;
             this.context2d.beginPath();  
