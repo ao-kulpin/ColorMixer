@@ -1,11 +1,22 @@
 /// alert('script start');
 
+const AngleProps = {
+    arrowWidth: 5,
+    arrowHeight: 14,
+    rayWidth: 2,
+    arcWidth: 2,
+
+    lightColor: 'white',
+    darkColor: 'black'
+}
+
 const ColorWheel = {
     started: false,
     element: null,
     context2d: null,
     rect: null,
     wheelRadius: 10,
+    sliderR: 5,
     sliderActive: false,
     centerX: 0,
     centerY: 0,
@@ -32,7 +43,6 @@ const ColorWheel = {
                                     const y = event.clientY;
                                     if (this.isInWheel(x, y)) {
                                         this.sliderActivate();
-                                        this.sliderMove(x, y);
                                         this.getHueAndSaturation(x, y);
                                         this.draw();
                                         Master.onChangeColorWheel();
@@ -45,7 +55,6 @@ const ColorWheel = {
                                   const x = event.clientX;
                                   const y = event.clientY;
                                   if (this.sliderActive) {
-                                    this.sliderMove(x, y);
                                     this.getHueAndSaturation(x, y);
                                     this.draw();
                                     Master.onChangeColorWheel();
@@ -72,18 +81,6 @@ const ColorWheel = {
         this.sliderActive = false;
     },
 
-    sliderMove(x, y) {
-        if (this.isInWheel(x,y)) {
-            this.sliderX = x;
-            this.sliderY = y;
-        } else {
-            const r = this.distance(x, y, this.centerX, this.centerY);
-            const k = this.wheelRadius / r;
-            this.sliderX = this.centerX + (x - this.centerX) * k;
-            this.sliderY = this.centerY + (y - this.centerY) * k;
-        }
-    },
-
     distance(x0, y0, x1, y1) {
         const distX = x1 - x0;
         const distY = y1 - y0;
@@ -107,14 +104,14 @@ const ColorWheel = {
         const hueRad = this._hue * Math.PI / 180;
         const x = this.centerX + r * Math.cos(hueRad);
         const y = this.centerY + r * Math.sin(hueRad);
-        this.sliderMove(x, y);
+        this.sliderR = r;
+        // this.sliderMove(x, y);
     },
     onScroll() {
         this.getViewPort();
     },
     getViewPort() {
         this.rect = this.element.getBoundingClientRect();
-        // this.slider.rect = ColorWheel.slider.element.getBoundingClientRect();
 
         this.centerX = (this.rect.left + this.rect.right) / 2;
         this.centerY = (this.rect.top + this.rect.bottom) / 2;
@@ -149,13 +146,13 @@ const ColorWheel = {
         }
 
         this._hue = newHue;
-        this._saturation = Math.min(Math.floor(r * 100 / this.wheelRadius), 100);;
+        this._saturation = Math.min(r * 100 / this.wheelRadius, 100);
+        this.sliderR = Math.min(r, this.wheelRadius);
     },
 
     draw() {
         this.context2d.clearRect(0, 0, this.rect.width, this.rect.height);
         this.drawConicGradient();
-        this.drawSlider();
         this.drawHueAngle();
     },
 
@@ -176,78 +173,120 @@ const ColorWheel = {
         this.context2d.fill();
     },
 
-    sliderProps: {
+    SliderProps: {
         blackRadius: 7,
         blackWidth: 2,
         whiteRadius: 4,
         whiteWidth: 2,
     },
 
-    drawSlider() {
-        const canvasX = this.toCanvasX(this.sliderX);
-        const canvasY = this.toCanvasY(this.sliderY);
+    drawSlider() {  // rotated with ray 2
+        const centerX = this.toCanvasX(this.centerX);
+        const centerY = this.toCanvasY(this.centerY);
+        const sliderX = centerX + this.sliderR;
 
         this.context2d.beginPath();
-        this.context2d.arc(canvasX, canvasY, this.sliderProps.blackRadius, 0, 2 * Math.PI);
-        this.context2d.lineWidth = this.sliderProps.blackWidth;
+        this.context2d.arc(sliderX, centerX, this.SliderProps.blackRadius, 0, 2 * Math.PI);
+        this.context2d.lineWidth = this.SliderProps.blackWidth;
         this.context2d.strokeStyle = this.sliderActive ? 'white' : 'black';
         this.context2d.stroke();
 
         this.context2d.beginPath();
-        this.context2d.arc(canvasX, canvasY, this.sliderProps.whiteRadius, 0, 2 * Math.PI);
-        this.context2d.lineWidth = this.sliderProps.whiteWidth;
+        this.context2d.arc(sliderX, centerX, this.SliderProps.whiteRadius, 0, 2 * Math.PI);
+        this.context2d.lineWidth = this.SliderProps.whiteWidth;
         this.context2d.strokeStyle = this.sliderActive ? 'black' : 'white';
         this.context2d.stroke();
     },
 
+    
     drawHueAngle() {
-        if (this.centerX == this.sliderX && this.centerY == this.sliderY) {
+        if (this._saturation < 1e-1) {
             // the slider is the center
             return;
         }
 
-        const lineColor = this._lightness < 50 ? 'white' : 'black';
+        const lineColor = this._lightness < 50 ? AngleProps.lightColor : AngleProps.darkColor;
         const centerX = this.toCanvasX(this.centerX);
         const centerY = this.toCanvasY(this.centerY);
 
-        this.context2d.beginPath();
-        this.context2d.lineWidth = 1;
+        this.context2d.lineWidth = AngleProps.rayWidth;
         this.context2d.strokeStyle = lineColor;
+        
+        this.context2d.beginPath(); // ray 1 (unmovable)
 
-        this.context2d.moveTo(centerX + this.wheelRadius, centerY);
+        this.context2d.moveTo(centerX + this.wheelRadius - AngleProps.arrowHeight, centerY);
         this.context2d.lineTo(centerX, centerY);
+        this.context2d.stroke();
+
+        this.context2d.fillStyle = lineColor;
+        this.context2d.beginPath();  // arrow 1
+        this.context2d.moveTo(centerX + this.wheelRadius, centerY);
+        this.context2d.lineTo(centerX + this.wheelRadius - AngleProps.arrowHeight, 
+                                centerY + AngleProps.arrowWidth);
+        this.context2d.lineTo(centerX + this.wheelRadius - AngleProps.arrowHeight, 
+                                centerY - AngleProps.arrowWidth);
+        this.context2d.fill();
+       
 
         const sliderX = this.toCanvasX(this.sliderX);
         const sliderY = this.toCanvasY(this.sliderY);
 
-        const distX = sliderX - centerX;
-        const distY = sliderY - centerY;
+        const sliderR = this.sliderR;
 
-        const sliderR = Math.sqrt(distX * distX + distY * distY);
+        // rotation of the movable ray
 
-        // this.context2d.lineTo(sliderX, sliderY);
+        this.context2d.translate(centerX, centerY);
+        this.context2d.rotate(this._hue * Math.PI / 180);
+        this.context2d.translate(-centerX, -centerY);
 
-        if (sliderR > this.sliderProps.blackRadius) {
-            const k = (sliderR - this.sliderProps.blackRadius) / sliderR;
-            this.context2d.lineTo(centerX + distX * k, centerY + distY * k);
+        this.context2d.beginPath();      // ray 2 (movable)
+        let x = centerX;
+        let y = centerY;
+
+        if (sliderR < this.SliderProps.blackRadius) {
+            // the slider is close to the center of the wheel
+            x = centerX + sliderR + this.SliderProps.blackRadius;
+            this.context2d.moveTo(x, y);
+            x = centerX + this.wheelRadius;
+            this.context2d.lineTo(x, y);
+        } else {
+            this.context2d.moveTo(x, y);
+            x = centerX + sliderR - this.SliderProps.blackRadius;
+            this.context2d.lineTo(x, y);
+            if (sliderR + this.SliderProps.blackRadius < this.wheelRadius) {
+                // the slider is inside the wheel
+                x = centerX + sliderR + this.SliderProps.blackRadius;
+                this.context2d.moveTo(x, y);
+                x = centerX + this.wheelRadius;
+                this.context2d.lineTo(x, y);
+            }
+
         }
-
         this.context2d.stroke();
 
-        if (sliderR < this.wheelRadius - this.sliderProps.blackRadius * 2) {
-            this.context2d.beginPath();
-            const k1 = (sliderR + this.sliderProps.blackRadius) / sliderR;
-            this.context2d.moveTo(centerX + distX * k1, centerY + distY * k1);
-
-            const k2 = this.wheelRadius / sliderR;
-            this.context2d.lineTo(centerX + distX * k2, centerY + distY * k2);
-            this.context2d.stroke();
+        if (sliderR + this.SliderProps.blackRadius < this.wheelRadius) {
+            // draw arrow 2
+            const k = Math.min(this.wheelRadius - sliderR - this.SliderProps.blackRadius, AngleProps.arrowHeight)/AngleProps.arrowHeight;
+            const arrowHeight = AngleProps.arrowHeight * k;
+            const arrowWidth = AngleProps.arrowWidth * k;
+            this.context2d.beginPath();  
+            this.context2d.moveTo(centerX + this.wheelRadius, centerY);
+            this.context2d.lineTo(centerX + this.wheelRadius - arrowHeight, centerY + arrowWidth);
+            this.context2d.lineTo(centerX + this.wheelRadius - arrowHeight, centerY - arrowWidth);
+            this.context2d.fill();
         }
+        this.drawSlider();
 
+        this.context2d.resetTransform()
+
+        // draw the arc
         this.context2d.beginPath();
-        this.context2d.lineWidth = 3;
+        this.context2d.strokeStyle = lineColor;
+        this.context2d.lineWidth = AngleProps.arcWidth;
         this.context2d.arc(centerX, centerY, this.wheelRadius, 0, this._hue * Math.PI / 180);
         this.context2d.stroke();
+
+
     },
 
     get hue () {
@@ -261,7 +300,7 @@ const ColorWheel = {
     },
 
     get saturation () {
-        return this._saturation;
+        return Math.floor(this._saturation);
     },
 
     set saturation (val) {
