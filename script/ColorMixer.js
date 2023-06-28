@@ -17,6 +17,10 @@ const SliderProps = {
     width2: 1,
 }
 
+const ColorWheelProps = {
+    hueFont: 'bold 12px Arial sans-serif'
+}
+
 const ColorWheel = {
     started: false,
     element: null,
@@ -118,7 +122,7 @@ const ColorWheel = {
         this.centerX = (this.rect.left + this.rect.right) / 2;
         this.centerY = (this.rect.top + this.rect.bottom) / 2;
 
-        this.wheelR = this.rect.height * 0.48;
+        this.wheelR = this.rect.height * 0.35;
     },
     getHueAndSaturation(x, y) {
         if (x === this.centerX && y === this.centerY) {
@@ -156,6 +160,7 @@ const ColorWheel = {
         this.context2d.clearRect(0, 0, this.rect.width, this.rect.height);
         this.drawConicGradient();
         this.drawHueAngle();
+        this.drawHueText();
     },
 
     drawConicGradient() {
@@ -281,6 +286,23 @@ const ColorWheel = {
         this.context2d.stroke();
 
 
+    },
+
+    drawHueText() {
+        const ctx = this.context2d;
+        const text = ` H=${this.hue}\xB0 `;
+        ctx.font = ColorWheelProps.hueFont;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'black';
+        const metrics = ctx.measureText(text);
+        const width = metrics.width;
+        const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        const r = Math.sqrt(width*width + height * height) / 2;
+        const hueRad = this._hue * Math.PI / 180;
+        const x = this.toCanvasX(this.centerX + (this.wheelR + r) * Math.cos(hueRad));
+        const y = this.toCanvasY(this.centerY + (this.wheelR + r) * Math.sin(hueRad));
+        ctx.fillText(text, x, y);
     },
 
     get hue () {
