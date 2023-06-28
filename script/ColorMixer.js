@@ -344,7 +344,7 @@ const Hue = {
     start() {
         if (!this.started) {
             this.elementText = document.getElementById('HueText');
-            this.rangeControl = new RangeControl(0, 360, 'HueRanger', 'HueSlider', 'HueSliderCenter',
+            this.rangeControl = new RangeControl(0, 1, 360, 'HueRanger', 'HueSlider', 'HueSliderCenter',
                         () => {
                             this._value =  this.elementText.value = this.rangeControl.value;
                             Master.onChangeHue();
@@ -388,7 +388,7 @@ const Saturation = {
         if (!this.started) {
             this.elementText = document.getElementById('SaturationText');
             this.elementText.addEventListener('input', (event) => Saturation.onChangeText());
-            this.rangeControl = new RangeControl(0, 100, 'SaturRanger', 'SaturSlider', 'SaturSliderCenter',
+            this.rangeControl = new RangeControl(0, 1, 100, 'SaturRanger', 'SaturSlider', 'SaturSliderCenter',
               () => {
                 this._value = this.elementText.value = this.rangeControl.value;
                 Master.onChangeSaturation();
@@ -432,7 +432,7 @@ const Lightness = {
         if (!this.started) {
             this.elementText = document.getElementById('LightText');
             this.elementText.addEventListener('input', (event) => this.onChangeText());
-            this.rangeControl = new RangeControl(0, 100, 'LightRanger', 'LightSlider', 'LightSliderCenter',
+            this.rangeControl = new RangeControl(0, 1, 100, 'LightRanger', 'LightSlider', 'LightSliderCenter',
               () => {
                 this._value = this.elementText.value = this.rangeControl.value;
                 Master.onChangeLightness();
@@ -595,17 +595,19 @@ function unmarkInvalidText(element) {
     element.style.textDecorationLine = 'none';
 }
 
-function RangeControl (min, max, id, idSlider, idCenter, onChange) {
+function RangeControl (min, step, max, id, idSlider, idCenter, onChange) {
     const control = {
         started: false,
         min: min,
-        max, max,
+        step: step,
+        max: max,
+        size: (max - min) / step, // should be integer
         onChange: onChange,
         id: id,
         idSlider: idSlider,
         idCenter: idCenter,
 
-        _value: 0,
+        _value: min,
 
         element: null,
         elementSlider: null,
@@ -676,10 +678,10 @@ function RangeControl (min, max, id, idSlider, idCenter, onChange) {
         getValue(x) {
             const workLength = this.rect.width - this.rectSlider.width;
             const posX = x - this.rect.left - this.rectSlider.width / 2;
-            let val = this.min + posX/workLength * (this.max - this.min);
-            val = Math.max(val, this.min);
-            val = Math.min(val, this.max);
-            this._value = Math.floor(val);
+            let intVal = Math.floor(posX/workLength * this.size);
+            intVal = Math.max(intVal, 0);
+            intVal = Math.min(intVal, this.size);
+            this._value = this.min + intVal * this.step;
         },
 
         sliderReset() {
