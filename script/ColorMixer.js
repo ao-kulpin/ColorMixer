@@ -122,7 +122,7 @@ const ColorWheel = {
         this.centerX = (this.rect.left + this.rect.right) / 2;
         this.centerY = (this.rect.top + this.rect.bottom) / 2;
 
-        this.wheelR = this.rect.height * 0.35;
+        this.wheelR = this.rect.height * 0.41;
     },
     getHueAndSaturation(x, y) {
         if (x === this.centerX && y === this.centerY) {
@@ -298,7 +298,7 @@ const ColorWheel = {
         const metrics = ctx.measureText(text);
         const width = metrics.width;
         const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
-        const r = Math.sqrt(width*width + height * height) / 2;
+        const r = Math.sqrt(width*width + height*height) / 2;
         const hueRad = this._hue * Math.PI / 180;
         const x = this.toCanvasX(this.centerX + (this.wheelR + r) * Math.cos(hueRad));
         const y = this.toCanvasY(this.centerY + (this.wheelR + r) * Math.sin(hueRad));
