@@ -18,7 +18,9 @@ const SliderProps = {
 }
 
 const ColorWheelProps = {
-    hueFont: 'bold 12px Arial sans-serif'
+    hueFont:        'bold 12px Arial sans-serif',
+    saturationFont: 'bold 12px Arial sans-serif',
+    saturationTextMargin: 0.3
 }
 
 const ColorWheel = {
@@ -207,83 +209,88 @@ const ColorWheel = {
             // the slider is the center
             return;
         }
+        
+        const ctx = this.context2d;
+        ctx.save();
 
         const lineColor = this._lightness < 50 ? AngleProps.lightColor : AngleProps.darkColor;
         const centerX = this.toCanvasX(this.centerX);
         const centerY = this.toCanvasY(this.centerY);
 
-        this.context2d.lineWidth = AngleProps.rayWidth;
-        this.context2d.strokeStyle = lineColor;
+        ctx.lineWidth = AngleProps.rayWidth;
+        ctx.strokeStyle = lineColor;
         
-        this.context2d.beginPath(); // ray 1 (unmovable)
+        ctx.beginPath(); // ray 1 (unmovable)
 
-        this.context2d.moveTo(centerX + this.wheelR - AngleProps.arrowHeight, centerY);
-        this.context2d.lineTo(centerX, centerY);
-        this.context2d.stroke();
+        ctx.moveTo(centerX + this.wheelR - AngleProps.arrowHeight, centerY);
+        ctx.lineTo(centerX, centerY);
+        ctx.stroke();
 
-        this.context2d.fillStyle = lineColor;
-        this.context2d.beginPath();  // arrow 1
-        this.context2d.moveTo(centerX + this.wheelR, centerY);
-        this.context2d.lineTo(centerX + this.wheelR - AngleProps.arrowHeight, 
+        ctx.fillStyle = lineColor;
+        ctx.beginPath();  // arrow 1
+        ctx.moveTo(centerX + this.wheelR, centerY);
+        ctx.lineTo(centerX + this.wheelR - AngleProps.arrowHeight, 
                                 centerY + AngleProps.arrowWidth);
-        this.context2d.lineTo(centerX + this.wheelR - AngleProps.arrowHeight, 
+        ctx.lineTo(centerX + this.wheelR - AngleProps.arrowHeight, 
                                 centerY - AngleProps.arrowWidth);
-        this.context2d.fill();
+        ctx.fill();
        
         const sliderR = this.sliderR;
 
         // rotation of the movable ray
 
-        this.context2d.translate(centerX, centerY);
-        this.context2d.rotate(this._hue * Math.PI / 180);
-        this.context2d.translate(-centerX, -centerY);
+        ctx.translate(centerX, centerY);
+        ctx.rotate(this._hue * Math.PI / 180);
+        ctx.translate(-centerX, -centerY);
 
-        this.context2d.beginPath();      // ray 2 (movable)
+        ctx.beginPath();      // ray 2 (movable)
         let x = centerX;
         let y = centerY;
 
         if (sliderR < SliderProps.radius1) {
             // the slider is close to the center of the wheel
             x = centerX + sliderR + SliderProps.radius1;
-            this.context2d.moveTo(x, y);
+            ctx.moveTo(x, y);
             x = centerX + this.wheelR;
-            this.context2d.lineTo(x, y);
+            ctx.lineTo(x, y);
         } else {
-            this.context2d.moveTo(x, y);
+            ctx.moveTo(x, y);
             x = centerX + sliderR - SliderProps.radius1;
-            this.context2d.lineTo(x, y);
+            ctx.lineTo(x, y);
             if (sliderR + SliderProps.radius1 < this.wheelR) {
                 // the slider is inside the wheel
                 x = centerX + sliderR + SliderProps.radius1;
-                this.context2d.moveTo(x, y);
+                ctx.moveTo(x, y);
                 x = centerX + this.wheelR;
-                this.context2d.lineTo(x, y);
+                ctx.lineTo(x, y);
             }
 
         }
-        this.context2d.stroke();
+        ctx.stroke();
 
         if (sliderR + SliderProps.radius1 < this.wheelR) {
             // draw arrow 2
             const k = Math.min(this.wheelR - sliderR - SliderProps.radius1, AngleProps.arrowHeight)/AngleProps.arrowHeight;
             const arrowHeight = AngleProps.arrowHeight * k;
             const arrowWidth = AngleProps.arrowWidth * k;
-            this.context2d.beginPath();  
-            this.context2d.moveTo(centerX + this.wheelR, centerY);
-            this.context2d.lineTo(centerX + this.wheelR - arrowHeight, centerY + arrowWidth);
-            this.context2d.lineTo(centerX + this.wheelR - arrowHeight, centerY - arrowWidth);
-            this.context2d.fill();
+            ctx.beginPath();  
+            ctx.moveTo(centerX + this.wheelR, centerY);
+            ctx.lineTo(centerX + this.wheelR - arrowHeight, centerY + arrowWidth);
+            ctx.lineTo(centerX + this.wheelR - arrowHeight, centerY - arrowWidth);
+            ctx.fill();
         }
-        this.drawSlider();
 
-        this.context2d.resetTransform()
+        this.drawSlider();
+        this.drawSaturationText(lineColor);
+
+        ctx.restore()
 
         // draw the arc
-        this.context2d.beginPath();
-        this.context2d.strokeStyle = lineColor;
-        this.context2d.lineWidth = AngleProps.arcWidth;
-        this.context2d.arc(centerX, centerY, this.wheelR, 0, this._hue * Math.PI / 180);
-        this.context2d.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = lineColor;
+        ctx.lineWidth = AngleProps.arcWidth;
+        ctx.arc(centerX, centerY, this.wheelR, 0, this._hue * Math.PI / 180);
+        ctx.stroke();
 
 
     },
@@ -301,8 +308,49 @@ const ColorWheel = {
         const r = Math.sqrt(width*width + height*height) / 2;
         const hueRad = this._hue * Math.PI / 180;
         const x = this.toCanvasX(this.centerX + (this.wheelR + r) * Math.cos(hueRad));
-        const y = this.toCanvasY(this.centerY + (this.wheelR + r) * Math.sin(hueRad));
+        const y = this.toCanvasY(this.centerY + (this.wheelR + r) * Math.sin(hueRad)); 
         ctx.fillText(text, x, y);
+    },
+
+    drawSaturationText(color) {  // rotated with ray 2
+        const ctx = this.context2d;
+        const text = `S=${this.saturation}%`;
+        ctx.font = ColorWheelProps.saturationFont;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = color;
+        const metrics = ctx.measureText(text);
+        const width = metrics.width;
+        const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        const margin = height * ColorWheelProps.saturationTextMargin;
+        const centerX = this.toCanvasX(this.centerX);
+        const centerY = this.toCanvasY(this.centerY);
+        const leftFromSlider = (width + 4 * margin) < this.sliderR;
+        const x = leftFromSlider 
+                        // text is left from the slider
+                        ? centerX + this.sliderR - SliderProps.radius1 - margin - width/2
+                        // text is right from the slider
+                        : centerX + this.sliderR + SliderProps.radius1 + margin + width/2;
+        const y = centerY - margin - height / 2;
+        const turnOverText = this._hue > 90 && this.hue <= 270;
+
+        if (turnOverText) {
+            // turn the text over
+            ctx.save();
+            const rotateX = x;
+            const rotateY = centerY;
+
+            ctx.translate(rotateX, rotateY);
+            ctx.rotate(Math.PI);
+            ctx.translate(-rotateX, -rotateY); 
+        }
+
+        ctx.fillText(text, x, y);
+ 
+        if (turnOverText) {
+            ctx.restore();
+        }
+
     },
 
     get hue () {
