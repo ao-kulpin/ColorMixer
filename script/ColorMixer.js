@@ -347,6 +347,7 @@ const Hue = {
             this.rangeControl = new RangeControl(0, 1, 360, 'HueRanger', 'HueSlider', 'HueSliderCenter',
                         () => {
                             this._value =  this.elementText.value = this.rangeControl.value;
+                            unmarkInvalidText(this.elementText);
                             Master.onChangeHue();
                         }
             );
@@ -391,6 +392,7 @@ const Saturation = {
             this.rangeControl = new RangeControl(0, 1, 100, 'SaturRanger', 'SaturSlider', 'SaturSliderCenter',
               () => {
                 this._value = this.elementText.value = this.rangeControl.value;
+                unmarkInvalidText(this.elementText);
                 Master.onChangeSaturation();
               });
             this.rangeControl.start();
@@ -431,10 +433,11 @@ const Lightness = {
     start() {
         if (!this.started) {
             this.elementText = document.getElementById('LightText');
-            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this.elementText.addEventListener('input', () => this.onChangeText());
             this.rangeControl = new RangeControl(0, 1, 100, 'LightRanger', 'LightSlider', 'LightSliderCenter',
               () => {
                 this._value = this.elementText.value = this.rangeControl.value;
+                unmarkInvalidText(this.elementText);
                 Master.onChangeLightness();
               });
             this.rangeControl.start();
@@ -467,6 +470,54 @@ const Lightness = {
 
 
 } // end of Lightness
+
+const Alpha = {
+    started: false,
+    elementText: null,
+    invalidText: false,
+    rangeControl: null,
+    _value: 0.5,
+    start() {
+        if (!this.started) {
+            this.elementText = document.getElementById('AlphaText');
+            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this.rangeControl = new RangeControl(0, 0.01, 1, 'AlphaRanger', 
+                'AlphaSlider', 'AlphaSliderCenter',
+                () => {
+                    this._value = this.elementText.value = this.rangeControl.value;
+                    unmarkInvalidText(this.elementText);
+                    Master.onChangeAlpha();
+                },
+                (val) => {return val.toFixed(2)});
+            this.rangeControl.start();
+
+            this.started = true;
+        }
+    },
+    onChangeText() {
+        const n = parseDecFloat(this.elementText.value, 0, 1);
+        if (isNaN(n)) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            this._value = this.rangeControl.value = n;
+            Master.onChangeAlpha();
+        }
+    },
+
+    get value () {
+        return this._value;
+    },
+
+    set value (val) {
+        this._value = this.elementText.value = this.rangeControl.value = val;
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
+    }
+} // end of Alpha
+
 
 const Choice = {
     started: false,
@@ -519,6 +570,7 @@ const Choice = {
 
     set alpha (val) {
         this._alpha = val;
+        this.updateChoice();
     },
 
     updateChoice() {
@@ -532,7 +584,8 @@ const Choice = {
 const Init = {
     hue: 45,
     saturation: 50,
-    lightness: 50
+    lightness: 50,
+    alpha: 0.5
 }
 
 const Master = {
@@ -543,11 +596,13 @@ const Master = {
             Hue.start();
             Saturation.start();
             Lightness.start();
+            Alpha.start();
             Choice.start();
 
             ColorWheel.hue = Choice._hue = Hue.value =Init.hue;
             ColorWheel.saturation = Choice.saturation = Saturation.value = Init.saturation;
             ColorWheel.lightness = Lightness.value = Init.lightness;
+            Alpha.value = Choice.alpha = Init.alpha;
 
             this.started = true;
         }
@@ -568,6 +623,10 @@ const Master = {
 
     onChangeLightness () {
         ColorWheel.lightness = Choice.lightness = Lightness.value;
+    },
+
+    onChangeAlpha () {
+        Choice.alpha = Alpha.value;
     }
 } // end of Master
 
@@ -586,6 +645,16 @@ function parseDecInt(text, min, max) {
     }
 }
 
+function parseDecFloat(text, min, max) {
+    const val = parseFloat(text);
+    if (isNaN(val) || val < min || val > max) {
+        return NaN;
+    } else {
+        return val;
+    }
+}
+
+
 function markInvalidText(element) {
     element.style.textDecorationLine = 'line-through';
     element.style.textDecorationColor = 'red';
@@ -595,7 +664,7 @@ function unmarkInvalidText(element) {
     element.style.textDecorationLine = 'none';
 }
 
-function RangeControl (min, step, max, id, idSlider, idCenter, onChange) {
+function RangeControl (min, step, max, id, idSlider, idCenter, onChange, rounder) {
     const control = {
         started: false,
         min: min,
@@ -606,6 +675,7 @@ function RangeControl (min, step, max, id, idSlider, idCenter, onChange) {
         id: id,
         idSlider: idSlider,
         idCenter: idCenter,
+        rounder: rounder,
 
         _value: min,
 
@@ -681,13 +751,17 @@ function RangeControl (min, step, max, id, idSlider, idCenter, onChange) {
             let intVal = Math.floor(posX/workLength * this.size);
             intVal = Math.max(intVal, 0);
             intVal = Math.min(intVal, this.size);
-            this._value = this.min + intVal * this.step;
+            this._value = this.doRound(this.min + intVal * this.step);
         },
 
         sliderReset() {
             const workLength = this.rect.width - this.rectSlider.width;
             const x = this.rect.left + this.rectSlider.width / 2 + (this._value - this.min) / (this.max - this.min) * workLength;
             this.sliderMove(x);
+        },
+
+        doRound(val) {
+            return this.rounder === undefined ? val : rounder(val);
         },
 
         get value() {
