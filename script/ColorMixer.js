@@ -713,111 +713,118 @@ function unmarkInvalidText(element) {
 }
 
 class RangeControl {
+    #started = false;
+    #min;
+    #step;
+    #max;
+    #size;
+    #onChange;
+    #id;
+    #idSlider;
+    #idCenter;
+    #rounder;
+    #value;
+    #element       = null;
+    #elementSlider = null;
+    #elementCenter = null;
+    #rect          = null;
+    #rectSlider    = null;
+    #sliderActive  = false;
+    
     constructor(min, step, max, id, idSlider, idCenter, onChange, rounder) {
-        this.started = false;
-        this.min = min;
-        this.step = step;
-        this.max = max;
-        this.size = (max - min) / step; // should be integer
-        this.onChange = onChange;
-        this.id = id;
-        this.idSlider = idSlider;
-        this.idCenter = idCenter;
-        this.rounder = rounder;
-
-        this._value = min;
-
-        this.element = null;
-        this.elementSlider = null;
-        this.elementCenter = null;
-
-        this.rect = null;
-        this.rectSlider = null;
-
-        this.sliderActive = false;
+        this.#min      = min;
+        this.#step     = step;
+        this.#max      = max;
+        this.#size     = (max - min) / step; // should be integer
+        this.#onChange = onChange;
+        this.#id       = id;
+        this.#idSlider = idSlider;
+        this.#idCenter = idCenter;
+        this.#rounder  = rounder;
+        this.#value    = min;
     }
 
     start() {
-        if( !this.started ) {
-            this.element = document.getElementById(this.id);
-            this.elementSlider = document.getElementById(this.idSlider);
-            this.elementCenter = document.getElementById(this.idCenter);
-            this.getViewPort();
-            this.element.addEventListener('mousedown',
+        if( !this.#started ) {
+            this.#element = document.getElementById(this.#id);
+            this.#elementSlider = document.getElementById(this.#idSlider);
+            this.#elementCenter = document.getElementById(this.#idCenter);
+            this.#getViewPort();
+            this.#element.addEventListener('mousedown',
                (event)=> {
-                  this.sliderActivate();
-                  this.sliderMove(event.clientX);
-                  this.getValue(event.clientX);
-                  this.onChange();
+                  this.#sliderActivate();
+                  this.#sliderMove(event.clientX);
+                  this.#getValue(event.clientX);
+                  this.#onChange();
                });
 
-               this.element.addEventListener('mousemove', 
+               this.#element.addEventListener('mousemove', 
                (event)=> {
-                  if (this.sliderActive) {
-                    this.sliderMove(event.clientX);
-                    this.getValue(event.clientX);
-                    this.onChange();
+                  if (this.#sliderActive) {
+                    this.#sliderMove(event.clientX);
+                    this.#getValue(event.clientX);
+                    this.#onChange();
                 }
                });
 
-               this.element.addEventListener('mouseup', 
+               this.#element.addEventListener('mouseup', 
                (event)=> {
-                  this.sliderDeactivate();
+                  this.#sliderDeactivate();
                });
 
 
-            this.started = true;
+            this.#started = true;
         }
     }
 
-    getViewPort() {
-        this.rect = this.element.getBoundingClientRect();
-        this.rectSlider = this.elementSlider.getBoundingClientRect();
+    #getViewPort() {
+        this.#rect = this.#element.getBoundingClientRect();
+        this.#rectSlider = this.#elementSlider.getBoundingClientRect();
     }
 
-    sliderMove(x) {
-        let left = x - this.rect.left - this.rectSlider.width / 2;
+    #sliderMove(x) {
+        let left = x - this.#rect.left - this.#rectSlider.width / 2;
         left = Math.max(left, 0);
-        left = Math.min(left, this.rect.width - this.rectSlider.width);
+        left = Math.min(left, this.#rect.width - this.#rectSlider.width);
 
-        this.elementSlider.style.left = left;
+        this.#elementSlider.style.left = left;
     }
 
-    sliderActivate() {
-        this.sliderActive = true;
-        this.elementCenter.setAttribute('stroke', '#FFF');
+    #sliderActivate() {
+        this.#sliderActive = true;
+        this.#elementCenter.setAttribute('stroke', '#FFF');
     }
 
-    sliderDeactivate() {
-        this.sliderActive = false;
-        this.elementCenter.setAttribute('stroke', '#000');
+    #sliderDeactivate() {
+        this.#sliderActive = false;
+        this.#elementCenter.setAttribute('stroke', '#000');
     }
 
-    getValue(x) {
-        const workLength = this.rect.width - this.rectSlider.width;
-        const posX = x - this.rect.left - this.rectSlider.width / 2;
-        let intVal = Math.floor(posX/workLength * this.size);
+    #getValue(x) {
+        const workLength = this.#rect.width - this.#rectSlider.width;
+        const posX = x - this.#rect.left - this.#rectSlider.width / 2;
+        let intVal = Math.floor(posX/workLength * this.#size);
         intVal = Math.max(intVal, 0);
-        intVal = Math.min(intVal, this.size);
-        this._value = this.doRound(this.min + intVal * this.step);
+        intVal = Math.min(intVal, this.#size);
+        this.#value = this.#doRound(this.#min + intVal * this.#step);
     }
 
-    sliderReset() {
-        const workLength = this.rect.width - this.rectSlider.width;
-        const x = this.rect.left + this.rectSlider.width / 2 + (this._value - this.min) / (this.max - this.min) * workLength;
-        this.sliderMove(x);
+    #sliderReset() {
+        const workLength = this.#rect.width - this.#rectSlider.width;
+        const x = this.#rect.left + this.#rectSlider.width / 2 + (this.#value - this.#min) / (this.#max - this.#min) * workLength;
+        this.#sliderMove(x);
     }
 
-    doRound(val) {
-        return this.rounder === undefined ? val : this.rounder(val);
+    #doRound(val) {
+        return this.#rounder === undefined ? val : this.#rounder(val);
     }
     get value() {
-        return this._value;
+        return this.#value;
     }
 
     set value(val) {
-        this._value = val;
-        this.sliderReset();
+        this.#value = val;
+        this.#sliderReset();
     }
 } // end of RangeControl
 
