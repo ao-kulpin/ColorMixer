@@ -18,8 +18,8 @@ const SliderProps = {
 }
 
 const ColorWheelProps = {
-    hueFont:        'bold 12px Arial sans-serif',
-    saturationFont: 'bold 12px Arial sans-serif',
+    hueFont:        'bold 14px Arial sans-serif',
+    saturationFont: 'bold 14px Arial sans-serif',
     saturationTextMargin: 0.3
 }
 
