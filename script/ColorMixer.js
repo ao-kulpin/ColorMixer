@@ -712,118 +712,114 @@ function unmarkInvalidText(element) {
     element.style.textDecorationLine = 'none';
 }
 
-function RangeControl (min, step, max, id, idSlider, idCenter, onChange, rounder) {
-    const control = {
-        started: false,
-        min: min,
-        step: step,
-        max: max,
-        size: (max - min) / step, // should be integer
-        onChange: onChange,
-        id: id,
-        idSlider: idSlider,
-        idCenter: idCenter,
-        rounder: rounder,
+class RangeControl {
+    constructor(min, step, max, id, idSlider, idCenter, onChange, rounder) {
+        this.started = false;
+        this.min = min;
+        this.step = step;
+        this.max = max;
+        this.size = (max - min) / step; // should be integer
+        this.onChange = onChange;
+        this.id = id;
+        this.idSlider = idSlider;
+        this.idCenter = idCenter;
+        this.rounder = rounder;
 
-        _value: min,
+        this._value = min;
 
-        element: null,
-        elementSlider: null,
-        elementCenter: null,
+        this.element = null;
+        this.elementSlider = null;
+        this.elementCenter = null;
 
-        rect: null,
-        rectSlider: null,
+        this.rect = null;
+        this.rectSlider = null;
 
-        sliderActivate: false,
+        this.sliderActive = false;
+    }
 
-        start() {
-            if( !this.started ) {
-                this.element = document.getElementById(this.id);
-                this.elementSlider = document.getElementById(this.idSlider);
-                this.elementCenter = document.getElementById(this.idCenter);
-                this.getViewPort();
-                this.element.addEventListener('mousedown',
-                   (event)=> {
-                      this.sliderActivate();
-                      this.sliderMove(event.clientX);
-                      this.getValue(event.clientX);
-                      this.onChange();
-                   });
+    start() {
+        if( !this.started ) {
+            this.element = document.getElementById(this.id);
+            this.elementSlider = document.getElementById(this.idSlider);
+            this.elementCenter = document.getElementById(this.idCenter);
+            this.getViewPort();
+            this.element.addEventListener('mousedown',
+               (event)=> {
+                  this.sliderActivate();
+                  this.sliderMove(event.clientX);
+                  this.getValue(event.clientX);
+                  this.onChange();
+               });
 
-                   this.element.addEventListener('mousemove', 
-                   (event)=> {
-                      if (this.sliderActive) {
-                        this.sliderMove(event.clientX);
-                        this.getValue(event.clientX);
-                        this.onChange();
-                    }
-                   });
+               this.element.addEventListener('mousemove', 
+               (event)=> {
+                  if (this.sliderActive) {
+                    this.sliderMove(event.clientX);
+                    this.getValue(event.clientX);
+                    this.onChange();
+                }
+               });
 
-                   this.element.addEventListener('mouseup', 
-                   (event)=> {
-                      this.sliderDeactivate();
-                   });
+               this.element.addEventListener('mouseup', 
+               (event)=> {
+                  this.sliderDeactivate();
+               });
 
 
-                this.started = true;
-            }
-        },
-
-        getViewPort() {
-            this.rect = this.element.getBoundingClientRect();
-            this.rectSlider = this.elementSlider.getBoundingClientRect();
-
-        },
-
-        sliderMove(x) {
-            let left = x - this.rect.left - this.rectSlider.width / 2;
-            left = Math.max(left, 0);
-            left = Math.min(left, this.rect.width - this.rectSlider.width);
-
-            this.elementSlider.style.left = left;
-        },
-
-        sliderActivate() {
-            this.sliderActive = true;
-            this.elementCenter.setAttribute('stroke', '#FFF');
-        },
-    
-        sliderDeactivate() {
-            this.sliderActive = false;
-            this.elementCenter.setAttribute('stroke', '#000');
-        },
-
-        getValue(x) {
-            const workLength = this.rect.width - this.rectSlider.width;
-            const posX = x - this.rect.left - this.rectSlider.width / 2;
-            let intVal = Math.floor(posX/workLength * this.size);
-            intVal = Math.max(intVal, 0);
-            intVal = Math.min(intVal, this.size);
-            this._value = this.doRound(this.min + intVal * this.step);
-        },
-
-        sliderReset() {
-            const workLength = this.rect.width - this.rectSlider.width;
-            const x = this.rect.left + this.rectSlider.width / 2 + (this._value - this.min) / (this.max - this.min) * workLength;
-            this.sliderMove(x);
-        },
-
-        doRound(val) {
-            return this.rounder === undefined ? val : rounder(val);
-        },
-
-        get value() {
-            return this._value;
-        },
-
-        set value(val) {
-            this._value = val;
-            this.sliderReset();
+            this.started = true;
         }
     }
 
-    return control;
-}  // end of RangeControl
+    getViewPort() {
+        this.rect = this.element.getBoundingClientRect();
+        this.rectSlider = this.elementSlider.getBoundingClientRect();
+    }
+
+    sliderMove(x) {
+        let left = x - this.rect.left - this.rectSlider.width / 2;
+        left = Math.max(left, 0);
+        left = Math.min(left, this.rect.width - this.rectSlider.width);
+
+        this.elementSlider.style.left = left;
+    }
+
+    sliderActivate() {
+        this.sliderActive = true;
+        this.elementCenter.setAttribute('stroke', '#FFF');
+    }
+
+    sliderDeactivate() {
+        this.sliderActive = false;
+        this.elementCenter.setAttribute('stroke', '#000');
+    }
+
+    getValue(x) {
+        const workLength = this.rect.width - this.rectSlider.width;
+        const posX = x - this.rect.left - this.rectSlider.width / 2;
+        let intVal = Math.floor(posX/workLength * this.size);
+        intVal = Math.max(intVal, 0);
+        intVal = Math.min(intVal, this.size);
+        this._value = this.doRound(this.min + intVal * this.step);
+    }
+
+    sliderReset() {
+        const workLength = this.rect.width - this.rectSlider.width;
+        const x = this.rect.left + this.rectSlider.width / 2 + (this._value - this.min) / (this.max - this.min) * workLength;
+        this.sliderMove(x);
+    }
+
+    doRound(val) {
+        return this.rounder === undefined ? val : this.rounder(val);
+    }
+    get value() {
+        return this._value;
+    }
+
+    set value(val) {
+        this._value = val;
+        this.sliderReset();
+    }
+} // end of RangeControl
 
 Master.start();
 
