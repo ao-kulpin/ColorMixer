@@ -73,11 +73,17 @@ const ColorWheel = {
                                }
                             );
 
-            this.element.addEventListener('mouseup', 
-                            (event)=> {
-                                this.sliderDeactivate();
-                                this.draw();
-                        }
+            const deactivateHandler = (eventName) => {
+                this.element.addEventListener(eventName, 
+                    () => {
+                        this.sliderDeactivate();
+                        this.draw();
+                    }
+            )};                
+            ['mouseup', 'mouseleave'].forEach(
+                // the same handler for the a few events
+                deactivateHandler        
+
             );
 
             this.started = true;
@@ -730,7 +736,7 @@ class RangeControl {
     #rect          = null;
     #rectSlider    = null;
     #sliderActive  = false;
-    
+
     constructor(min, step, max, id, idSlider, idCenter, onChange, rounder) {
         this.#min      = min;
         this.#step     = step;
@@ -767,11 +773,14 @@ class RangeControl {
                 }
                });
 
-               this.#element.addEventListener('mouseup', 
-               (event)=> {
-                  this.#sliderDeactivate();
-               });
 
+            ['mouseup', 'mouseleave'].forEach(
+                // the same handler for the a few events
+                eventName => {            
+                    this.#element.addEventListener(eventName, 
+                            () => this.#sliderDeactivate()
+
+            )});
 
             this.#started = true;
         }
