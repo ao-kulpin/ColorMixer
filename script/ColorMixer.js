@@ -132,6 +132,7 @@ const ColorWheel = {
 
         this.wheelR = this.rect.height * 0.41;
     },
+
     getHueAndSaturation(x, y) {
         if (x === this.centerX && y === this.centerY) {
             // the slider is on the center - calculating is impossible
@@ -211,11 +212,6 @@ const ColorWheel = {
     },
     
     drawHueAngle() {
-        if (this._saturation < 1e-1) {
-            // the slider is the center
-            return;
-        }
-        
         const ctx = this.context2d;
         ctx.save();
 
