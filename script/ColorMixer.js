@@ -328,13 +328,18 @@ const ColorWheel = {
         const centerX = this.toCanvasX(this.centerX);
         const centerY = this.toCanvasY(this.centerY);
         const leftFromSlider = (width + 4 * margin) < this.sliderR;
+        const aboveRay = this._hue > 90;
+        const turnOverText = this._hue > 90 && this.hue < 270;
         const x = leftFromSlider 
                         // text is left from the slider
                         ? centerX + this.sliderR - SliderProps.radius1 - margin - width/2
                         // text is right from the slider
                         : centerX + this.sliderR + SliderProps.radius1 + margin + width/2;
-        const y = centerY - margin - height / 2;
-        const turnOverText = this._hue > 90 && this.hue <= 270;
+        const y = aboveRay 
+                        // text is above ray 2
+                        ? centerY - margin - height / 2
+                        // text is below ray 2
+                        : centerY + margin + height / 2;           
 
         if (turnOverText) {
             // turn the text over
