@@ -11,7 +11,7 @@
     background-color: blueviolet;
 }
 
-#ColorWheel {
+#ColorWheel, #Choice {
     position: relative;
     overflow: visible;
     display: block;        
@@ -22,37 +22,12 @@
     background-color: lightgrey;
 }
 
-#ChoiceDiv {
-    position: relative;
-    width: 50%;
-    height: 100%;
-    background-color: aquamarine;
+#ColorWheel {
+    background-color: lightgrey;
 }
 
 #Choice {
-    position: absolute;
-    width: 70%;
-    height: 70%;
-    top: 10%;
-    left: 10%;
-    border: solid;
-    border-color: black;
-    border-width: 1px;
-    border-radius: 10%;
-    background-color: hsla(120,60%,45%,20%);
-}
-
-#Background {
-    position: absolute;
-    width: 70%;
-    height: 70%;
-    top: 20%;
-    left: 20%;
-    border: solid;
-    border-color: black;
-    border-width: 1px;
-    border-radius: 10%;
-    background-color: lightgray;
+    background-color: aquamarine;
 }
 
 #HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv {

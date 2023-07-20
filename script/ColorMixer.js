@@ -573,11 +573,20 @@ const Alpha = {
     }
 } // end of Alpha
 
+const ChoiceProps = {
+    squareSide: 0.75,
+    squareIdent: 0.05,
+    cornerRadius: 0.1,
+    borderWidth: 1,
+    borderStyle: 'black',
+    borderDash: [1, 3]
+}
 
 const Choice = {
     started: false,
-    elementChoice: null,
-    elementBackground: null,
+    element: null,
+    context2: null,
+    rect: null,
     _hue: 0,
     _saturation: 100,
     _lightness: 50,
@@ -585,8 +594,14 @@ const Choice = {
 
     start() {
         if (!this.started) {
-            this.elementChoice = document.getElementById('Choice');
-            this.elementBackground = document.getElementById('Background');
+            this.element = document.getElementById('Choice');
+
+            // Fix size of the canvas
+            this.element.width = this.element.clientWidth;
+            this.element.height = this.element.clientHeight;
+
+            this.context2d = this.element.getContext("2d");
+            this.getViewPort();
 
             this.started = true;
         }
@@ -629,10 +644,67 @@ const Choice = {
     },
 
     updateChoice() {
-        const s = 'hsla(' + this._hue + ',' + this._saturation + '%,' + this._lightness + '%,' + this._alpha + ')';
-        this.elementChoice.style.backgroundColor = s;
-    }
+        this.draw();
+        // const s = 'hsla(' + this._hue + ',' + this._saturation + '%,' + this._lightness + '%,' + this._alpha + ')';
+        // this.elementChoice.style.backgroundColor = s;
+    },
 
+    getViewPort() {
+        this.rect = this.element.getBoundingClientRect();
+    },
+
+    draw() {
+        this.context2d.clearRect(0, 0, this.rect.width, this.rect.height);
+        this.drawChoice();
+    },
+
+    drawChoice() {
+        const color = 'hsla(' + this._hue + ',' + this._saturation + '%,' + this._lightness + '%,' + this._alpha + ')';
+        const ctx = this.context2d;
+        const width = this.rect.width;
+        const w = width * ChoiceProps.squareSide;
+        const w2 = w / 2;
+        const ident = width * ChoiceProps.squareIdent;
+        const cornerR = width * ChoiceProps.cornerRadius; 
+
+        const x0 = w2 + ident;
+        const y0 = ident;
+
+        const x1 = w + ident;
+        const y1 = ident
+
+        const x2 = x1;
+        const y2 = w2 + ident;
+
+        const x3 = x2;
+        const y3 = w + ident;
+
+        const x4 = x0;
+        const y4 = y3;
+
+        const x5 = ident;
+        const y5 = y4;
+
+        const x6 = x5;
+        const y6 = y2;
+
+        const x7 = x6;
+        const y7 = y0;
+
+        ctx.beginPath();
+        ctx.lineWidth = ChoiceProps.borderWidth;
+        ctx.strokeStyle = ChoiceProps.borderStyle;
+        ctx.setLineDash(ChoiceProps.borderDash);
+        ctx.fillStyle = color;
+        ctx.moveTo(x0, y0);
+        ctx.arcTo(x1, y1, x2, y2, cornerR);
+        ctx.arcTo(x3, y3, x4, y4, cornerR);
+        ctx.arcTo(x5, y5, x6, y6, cornerR);
+        ctx.arcTo(x7, y7, x0, y0, cornerR);
+        ctx.lineTo(x0, y0);
+        ctx.fill();
+        ctx.stroke();
+    }
 
 }  // end of Choice
 
