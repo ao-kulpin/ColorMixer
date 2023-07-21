@@ -577,15 +577,17 @@ const ChoiceProps = {
     squareSide: 0.75,
     squareIdent: 0.05,
     cornerRadius: 0.1,
-    borderWidth: 2,
+    borderWidth: 3,
     borderStyle: 'black',
-    borderDash: [2, 3]
+    bacgroundBorderStyle: 'white',
+    bacgroundColor: 'black',
+    borderDash: [3, 5]
 }
 
 const Choice = {
     started: false,
     element: null,
-    context2: null,
+    context2d: null,
     rect: null,
     _hue: 0,
     _saturation: 100,
@@ -649,26 +651,41 @@ const Choice = {
 
     draw() {
         this.context2d.clearRect(0, 0, this.rect.width, this.rect.height);
+        this.drawBackground();
         this.drawChoice();
     },
 
     drawChoice() {
         const color = 'hsla(' + this._hue + ',' + this._saturation + '%,' + this._lightness + '%,' + this._alpha + ')';
-        const ctx = this.context2d;
         const width = this.rect.width;
-        const w = width * ChoiceProps.squareSide;
-        const w2 = w / 2;
+        const side = width * ChoiceProps.squareSide;
         const ident = width * ChoiceProps.squareIdent;
         const cornerR = width * ChoiceProps.cornerRadius; 
 
-        const x0 = w2 + ident;
+        this.drawRoundedSquare(side, ident, cornerR, color, ChoiceProps.borderStyle);
+    },
+
+    drawBackground() {
+        const width = this.rect.width;
+        const side = width * ChoiceProps.squareSide;
+        const ident = 2 * width * ChoiceProps.squareIdent;
+        const cornerR = width * ChoiceProps.cornerRadius; 
+
+        this.drawRoundedSquare(side, ident, cornerR, ChoiceProps.bacgroundColor, 
+                                                ChoiceProps.bacgroundBorderStyle);
+    },
+
+    drawRoundedSquare(side, ident, cornerR, color, borderColor) {
+        const ctx = this.context2d;
+
+        const x0 = side / 2 + ident;
         const y0 = ident;
 
-        const x1 = w + ident;
+        const x1 = side + ident;
         const y1 = y0;
 
         const x2 = x1;
-        const y2 = w + ident;
+        const y2 = side + ident;
 
         const x3 = ident;
         const y3 = y2;
@@ -676,9 +693,10 @@ const Choice = {
         const x4 = x3;
         const y4 = y0;
 
+        ctx.save();
         ctx.beginPath();
         ctx.lineWidth = ChoiceProps.borderWidth;
-        ctx.strokeStyle = ChoiceProps.borderStyle;
+        ctx.strokeStyle = borderColor;
         ctx.setLineDash(ChoiceProps.borderDash);
         ctx.fillStyle = color;
         ctx.moveTo(x0, y0);
@@ -687,9 +705,11 @@ const Choice = {
         ctx.arcTo(x3, y3, x4, y4, cornerR);
         ctx.arcTo(x4, y4, x0, y0, cornerR);
         ctx.lineTo(x0, y0);
-        ctx.fill();
         ctx.stroke();
+        ctx.fill();
+        ctx.restore();
     }
+
 
 }  // end of Choice
 
