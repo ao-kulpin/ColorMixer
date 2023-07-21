@@ -577,9 +577,9 @@ const ChoiceProps = {
     squareSide: 0.75,
     squareIdent: 0.05,
     cornerRadius: 0.1,
-    borderWidth: 1,
+    borderWidth: 2,
     borderStyle: 'black',
-    borderDash: [1, 3]
+    borderDash: [2, 3]
 }
 
 const Choice = {
@@ -671,25 +671,16 @@ const Choice = {
         const y0 = ident;
 
         const x1 = w + ident;
-        const y1 = ident
+        const y1 = y0;
 
         const x2 = x1;
-        const y2 = w2 + ident;
+        const y2 = w + ident;
 
-        const x3 = x2;
-        const y3 = w + ident;
+        const x3 = ident;
+        const y3 = y2;
 
-        const x4 = x0;
-        const y4 = y3;
-
-        const x5 = ident;
-        const y5 = y4;
-
-        const x6 = x5;
-        const y6 = y2;
-
-        const x7 = x6;
-        const y7 = y0;
+        const x4 = x3;
+        const y4 = y0;
 
         ctx.beginPath();
         ctx.lineWidth = ChoiceProps.borderWidth;
@@ -698,9 +689,9 @@ const Choice = {
         ctx.fillStyle = color;
         ctx.moveTo(x0, y0);
         ctx.arcTo(x1, y1, x2, y2, cornerR);
+        ctx.arcTo(x2, y2, x3, y3, cornerR);
         ctx.arcTo(x3, y3, x4, y4, cornerR);
-        ctx.arcTo(x5, y5, x6, y6, cornerR);
-        ctx.arcTo(x7, y7, x0, y0, cornerR);
+        ctx.arcTo(x4, y4, x0, y0, cornerR);
         ctx.lineTo(x0, y0);
         ctx.fill();
         ctx.stroke();
