@@ -613,7 +613,7 @@ const Choice = {
 
     set hue (val) {
         this._hue = val;
-        this.updateChoice();
+        this.draw();
     },
 
     get saturation () {
@@ -622,7 +622,7 @@ const Choice = {
 
     set saturation (val) {
         this._saturation = val;
-        this.updateChoice();
+        this.draw();
     },
 
     get lightness () {
@@ -631,7 +631,7 @@ const Choice = {
 
     set lightness (val) {
         this._lightness = val;
-        this.updateChoice();
+        this.draw();
     },
 
     get alpha () {
@@ -640,13 +640,7 @@ const Choice = {
 
     set alpha (val) {
         this._alpha = val;
-        this.updateChoice();
-    },
-
-    updateChoice() {
         this.draw();
-        // const s = 'hsla(' + this._hue + ',' + this._saturation + '%,' + this._lightness + '%,' + this._alpha + ')';
-        // this.elementChoice.style.backgroundColor = s;
     },
 
     getViewPort() {
