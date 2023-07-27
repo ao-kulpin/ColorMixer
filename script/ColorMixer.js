@@ -741,11 +741,9 @@ const Choice = {
 
 }  // end of Choice
 
-const Init = {
-    hue: 45,
-    saturation: 50,
-    lightness: 50,
-    alpha: 0.5
+
+const MasterProps = {
+    initColor: ColorObj.createHSLA(45, 50, 50, 0.5)
 }
 
 const Master = {
@@ -759,10 +757,12 @@ const Master = {
             Alpha.start();
             Choice.start();
 
-            ColorWheel.hue = Choice._hue = Hue.value =Init.hue;
-            ColorWheel.saturation = Choice.saturation = Saturation.value = Init.saturation;
-            ColorWheel.lightness = Lightness.value = Init.lightness;
-            Alpha.value = Choice.alpha = Init.alpha;
+            const initColor = MasterProps.initColor;
+            const hsla = initColor.hsla;
+            ColorWheel.hue = Choice._hue = Hue.value = hsla.h;
+            ColorWheel.saturation = Choice.saturation = Saturation.value = hsla.s;
+            ColorWheel.lightness = Lightness.value = hsla.l;
+            Alpha.value = Choice.alpha = hsla.a;
 
             this.started = true;
         }
