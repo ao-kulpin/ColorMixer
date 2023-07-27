@@ -1,3 +1,4 @@
+
 /// alert('script start');
 
 const AngleProps = {
@@ -576,12 +577,15 @@ const Alpha = {
 const ChoiceProps = {
     squareSide: 0.75,
     squareIdent: 0.05,
-    cornerRadius: 0.1,
-    borderWidth: 3,
-    borderStyle: 'black',
+    cornerR: 0.05,
+    borderWidth: 2,
+    borderStyle: 'white',
     bacgroundBorderStyle: 'white',
     bacgroundColor: 'black',
-    borderDash: [3, 5]
+    borderDash: [1, 0],
+    tailMargin: 0.04,
+    tailRowSize: 7,
+    tailCornerR: 0.03
 }
 
 const Choice = {
@@ -660,34 +664,54 @@ const Choice = {
         const width = this.rect.width;
         const side = width * ChoiceProps.squareSide;
         const ident = width * ChoiceProps.squareIdent;
-        const cornerR = width * ChoiceProps.cornerRadius; 
+        const cornerR = width * ChoiceProps.cornerR; 
 
-        this.drawRoundedSquare(side, ident, cornerR, color, ChoiceProps.borderStyle);
+        this.drawRoundedSquare(side, ident, ident, cornerR, color, ChoiceProps.borderStyle, 
+                                ChoiceProps.borderWidth, ChoiceProps.borderDash);
     },
 
     drawBackground() {
         const width = this.rect.width;
         const side = width * ChoiceProps.squareSide;
         const ident = 2 * width * ChoiceProps.squareIdent;
-        const cornerR = width * ChoiceProps.cornerRadius; 
+        const cornerR = width * ChoiceProps.cornerR; 
 
-        this.drawRoundedSquare(side, ident, cornerR, ChoiceProps.bacgroundColor, 
-                                                ChoiceProps.bacgroundBorderStyle);
+        this.drawRoundedSquare(side, ident, ident, cornerR, 
+                ChoiceProps.bacgroundColor, ChoiceProps.bacgroundBorderStyle, ChoiceProps.borderWidth,
+                ChoiceProps.borderDash);
+
+        // pave the background with colored tails
+
+        const tailMargin = side * ChoiceProps.tailMargin;
+        const tailSideMargin = (side - tailMargin) / ChoiceProps.tailRowSize;
+        const tailSide = tailSideMargin - tailMargin;
+        const tailCornerR = side * ChoiceProps.tailCornerR;
+
+        for (let row = 0; row < ChoiceProps.tailRowSize; ++row) {
+            const tailIdentY = ident + tailMargin + row * tailSideMargin;
+            for (let col = 0; col < ChoiceProps.tailRowSize; ++col) {
+                const tailIdentX = ident + tailMargin + col * tailSideMargin;
+   
+                this.drawRoundedSquare(tailSide, tailIdentX, tailIdentY, tailCornerR, 'rgb(255, 255, 0)');    
+            }
+        }
+        
+        
     },
 
-    drawRoundedSquare(side, ident, cornerR, color, borderColor) {
+    drawRoundedSquare(side, identX, identY, cornerR, color, borderColor, borderWidth, borderDash) {
         const ctx = this.context2d;
 
-        const x0 = side / 2 + ident;
-        const y0 = ident;
+        const x0 = side / 2 + identX;
+        const y0 = identY;
 
-        const x1 = side + ident;
+        const x1 = side + identX;
         const y1 = y0;
 
         const x2 = x1;
-        const y2 = side + ident;
+        const y2 = side + identY;
 
-        const x3 = ident;
+        const x3 = identX;
         const y3 = y2;
 
         const x4 = x3;
@@ -695,9 +719,11 @@ const Choice = {
 
         ctx.save();
         ctx.beginPath();
-        ctx.lineWidth = ChoiceProps.borderWidth;
-        ctx.strokeStyle = borderColor;
-        ctx.setLineDash(ChoiceProps.borderDash);
+        if (borderColor !== undefined) {
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderWidth;
+            ctx.setLineDash(borderDash);
+        }
         ctx.fillStyle = color;
         ctx.moveTo(x0, y0);
         ctx.arcTo(x1, y1, x2, y2, cornerR);
@@ -705,7 +731,9 @@ const Choice = {
         ctx.arcTo(x3, y3, x4, y4, cornerR);
         ctx.arcTo(x4, y4, x0, y0, cornerR);
         ctx.lineTo(x0, y0);
-        ctx.stroke();
+        if (borderColor !== undefined) {
+            ctx.stroke();
+        }
         ctx.fill();
         ctx.restore();
     }
