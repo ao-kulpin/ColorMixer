@@ -597,6 +597,7 @@ const Choice = {
     _saturation: 100,
     _lightness: 50,
     _alpha: 1,
+    _color: null,
 
     start() {
         if (!this.started) {
@@ -613,39 +614,12 @@ const Choice = {
         }
     },
 
-    get hue() {
-        return this._hue;
+    get color() {
+        return this._color;
     },
 
-    set hue (val) {
-        this._hue = val;
-        this.draw();
-    },
-
-    get saturation () {
-        return this._saturation;
-    },
-
-    set saturation (val) {
-        this._saturation = val;
-        this.draw();
-    },
-
-    get lightness () {
-        return this._lightness;
-    },
-
-    set lightness (val) {
-        this._lightness = val;
-        this.draw();
-    },
-
-    get alpha () {
-        return this._alpha;
-    },
-
-    set alpha (val) {
-        this._alpha = val;
+    set color(val) {
+        this._color = val;
         this.draw();
     },
 
@@ -660,13 +634,13 @@ const Choice = {
     },
 
     drawChoice() {
-        const color = 'hsla(' + this._hue + ',' + this._saturation + '%,' + this._lightness + '%,' + this._alpha + ')';
+        const hsla = this._color.hsla.toString();
         const width = this.rect.width;
         const side = width * ChoiceProps.squareSide;
         const ident = width * ChoiceProps.squareIdent;
         const cornerR = width * ChoiceProps.cornerR; 
 
-        this.drawRoundedSquare(side, ident, ident, cornerR, color, ChoiceProps.borderStyle, 
+        this.drawRoundedSquare(side, ident, ident, cornerR, hsla, ChoiceProps.borderStyle, 
                                 ChoiceProps.borderWidth, ChoiceProps.borderDash);
     },
 
@@ -748,6 +722,7 @@ const MasterProps = {
 
 const Master = {
     started: false,
+    curColor: null,
     start() {
         if (!this.started) {
             ColorWheel.start();
@@ -757,36 +732,61 @@ const Master = {
             Alpha.start();
             Choice.start();
 
-            const initColor = MasterProps.initColor;
-            const hsla = initColor.hsla;
-            ColorWheel.hue = Choice._hue = Hue.value = hsla.h;
-            ColorWheel.saturation = Choice.saturation = Saturation.value = hsla.s;
+            this.curColor = MasterProps.initColor;
+            const hsla = this.curColor.hsla;
+            Choice.color = this.curColor;
+            ColorWheel.hue = Hue.value = hsla.h;
+            ColorWheel.saturation = Saturation.value = hsla.s;
             ColorWheel.lightness = Lightness.value = hsla.l;
-            Alpha.value = Choice.alpha = hsla.a;
+            Alpha.value = hsla.a;
 
             this.started = true;
         }
     },
 
     onChangeColorWheel () {
-        Hue.value = Choice.hue = ColorWheel.hue;
-        Saturation.value = Choice.saturation = ColorWheel.saturation;
+        const oldHsla = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(ColorWheel.hue, ColorWheel.saturation, oldHsla.l, oldHsla.a);
+        const hsla = this.curColor.hsla;
+
+        Choice.color = this.curColor;
+        Hue.value = hsla.h;
+        Saturation.value = hsla.s;
     },
 
     onChangeHue () {
-        ColorWheel.hue = Choice.hue = Hue.value;
+        const oldHsla = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(Hue.value, ColorWheel.saturation, oldHsla.l, oldHsla.a);
+        const hsla = this.curColor.hsla;
+
+        Choice.color = this.curColor;
+        ColorWheel.hue = hsla.h;
     },
 
     onChangeSaturation () {
-        ColorWheel.saturation = Choice.saturation = Saturation.value;
+        const oldHsla = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(oldHsla.h, Saturation.value, oldHsla.l, oldHsla.a);
+        const hsla = this.curColor.hsla;
+
+        Choice.color = this.curColor;
+        ColorWheel.saturation = hsla.s;
     },
 
     onChangeLightness () {
-        ColorWheel.lightness = Choice.lightness = Lightness.value;
+        const oldHsla = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, Lightness.value, oldHsla.a);
+        const hsla = this.curColor.hsla;
+
+        Choice.color = this.curColor;
+        ColorWheel.lightness = hsla.l;
     },
 
     onChangeAlpha () {
-        Choice.alpha = Alpha.value;
+        const oldHsla = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, oldHsla.l, Alpha.value);
+        const hsla = this.curColor.hsla;
+
+        Choice.color = this.curColor;
     }
 } // end of Master
 
