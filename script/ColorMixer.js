@@ -666,7 +666,8 @@ const Choice = {
             for (let col = 0; col < ChoiceProps.tailRowSize; ++col) {
                 const tailIdentX = ident + tailMargin + col * tailSideMargin;
    
-                this.drawRoundedSquare(tailSide, tailIdentX, tailIdentY, tailCornerR, 'rgb(255, 255, 0)');    
+                this.drawRoundedSquare(tailSide, tailIdentX, tailIdentY, tailCornerR, 
+                                        RandomColor.getColor().hsla.toString());    
             }
         }
         
@@ -711,9 +712,18 @@ const Choice = {
         ctx.fill();
         ctx.restore();
     }
-
-
 }  // end of Choice
+
+const RandomColor = {
+    getColor () {
+        return ColorObj.createHSLA (
+                    Math.random() * 360,        // Random hue: 0-360
+                    50 + Math.random() * 50,    // Random saturation: 50-100%
+                    50 + Math.random() * 50,    // Random Lightness: 50-100%
+                    1                           // alpha = 1
+                );
+    }
+} // end of RandomColor
 
 
 const MasterProps = {
