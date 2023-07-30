@@ -50,7 +50,7 @@ class ColorObj {
         return this.#hslaObj;
     }
 
-    static createHSLA(h, l, s, a) {
+    static createHSLA(h, s, l, a) {
         return new ColorObj(new HSLAObj(h, s, l, a));
     }
 }
