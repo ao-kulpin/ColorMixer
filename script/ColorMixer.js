@@ -524,7 +524,6 @@ const Lightness = {
         unmarkInvalidText(this.elementText);
     },
 
-
 } // end of Lightness
 
 const Alpha = {
@@ -573,6 +572,39 @@ const Alpha = {
         unmarkInvalidText(this.elementText);
     }
 } // end of Alpha
+
+const HSLAText = {
+    started: false,
+    elementText: null,
+    invalidText: false,
+    _color: null,
+
+    start() {
+        if (!this.started) {
+            this.elementText = document.getElementById('HSLAText');
+            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this._color = ColorObj.createHSLA();
+
+            this.started = true;
+        }
+    },
+
+    onChangeText() {
+    },
+
+    get color () {
+        return this._color;
+    },
+
+    set color (val) {
+        this._color = val;
+        this.elementText.value = this._color.hsla.toString();
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
+    }
+
+
+} // end of HSLAText
 
 const ChoiceProps = {
     squareSide: 0.75,
@@ -740,11 +772,12 @@ const Master = {
             Saturation.start();
             Lightness.start();
             Alpha.start();
+            HSLAText.start();
             Choice.start();
 
             this.curColor = MasterProps.initColor;
             const hsla = this.curColor.hsla;
-            Choice.color = this.curColor;
+            Choice.color = HSLAText.color = this.curColor;
             ColorWheel.hue = Hue.value = hsla.h;
             ColorWheel.saturation = Saturation.value = hsla.s;
             ColorWheel.lightness = Lightness.value = hsla.l;
@@ -759,7 +792,7 @@ const Master = {
         this.curColor = ColorObj.createHSLA(ColorWheel.hue, ColorWheel.saturation, oldHsla.l, oldHsla.a);
         const hsla = this.curColor.hsla;
 
-        Choice.color = this.curColor;
+        Choice.color = HSLAText.color = this.curColor;
         Hue.value = hsla.h;
         Saturation.value = hsla.s;
     },
@@ -769,6 +802,8 @@ const Master = {
         this.curColor = ColorObj.createHSLA(Hue.value, ColorWheel.saturation, oldHsla.l, oldHsla.a);
         const hsla = this.curColor.hsla;
 
+
+        Choice.color = HSLAText.color = this.curColor;
         Choice.color = this.curColor;
         ColorWheel.hue = hsla.h;
     },
@@ -778,7 +813,7 @@ const Master = {
         this.curColor = ColorObj.createHSLA(oldHsla.h, Saturation.value, oldHsla.l, oldHsla.a);
         const hsla = this.curColor.hsla;
 
-        Choice.color = this.curColor;
+        Choice.color = HSLAText.color = this.curColor;
         ColorWheel.saturation = hsla.s;
     },
 
@@ -787,7 +822,7 @@ const Master = {
         this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, Lightness.value, oldHsla.a);
         const hsla = this.curColor.hsla;
 
-        Choice.color = this.curColor;
+        Choice.color = HSLAText.color = this.curColor;
         ColorWheel.lightness = hsla.l;
     },
 
@@ -796,7 +831,7 @@ const Master = {
         this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, oldHsla.l, Alpha.value);
         const hsla = this.curColor.hsla;
 
-        Choice.color = this.curColor;
+        Choice.color = HSLAText.color = this.curColor;
     }
 } // end of Master
 

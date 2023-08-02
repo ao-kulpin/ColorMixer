@@ -30,7 +30,7 @@
     background-color: darkgrey;
 }
 
-#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv {
+#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv {
     position: relative;
     overflow: visible;
     display: block;        
@@ -52,6 +52,11 @@
 #AlphaDiv {
     background-color: lightgoldenrodyellow;
 }
+
+#HSLATextDiv {
+    background-color: lightgreen;
+}
+
 
 #WheelSlider {
     position: absolute; 
@@ -77,6 +82,10 @@
     height: 1em;
     top: 0;
     left: 0;
+}
+
+#HSLATextTitle {
+    margin: 0 auto; 
 }
 
 h2,h5 {
