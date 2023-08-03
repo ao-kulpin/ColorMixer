@@ -590,6 +590,16 @@ const HSLAText = {
     },
 
     onChangeText() {
+        const res = parseHSLA(this.elementText.value);
+        if (res === null) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this._color = res;
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            Master.onChangeHSLAText();
+        }
     },
 
     get color () {
@@ -832,10 +842,28 @@ const Master = {
         const hsla = this.curColor.hsla;
 
         Choice.color = HSLAText.color = this.curColor;
+    },
+
+    onChangeHSLAText () {
+        const oldHsla = this.curColor.hsla;
+        this.curColor = HSLAText.color;
+        const hsla = this.curColor.hsla;
+
+        Choice.color = this.curColor;
+        ColorWheel.hue = hsla.h;
+        ColorWheel.saturation = hsla.s;
+        ColorWheel.lightness = hsla.l
+        Hue.value = hsla.h;
+        Saturation.value = hsla.s;
+        Lightness.value = hsla.l
+        Alpha.value = hsla.a
     }
+
 } // end of Master
 
-const simpleDecInt = /^\s*[\+\-]?[0-9]*$/;
+const simpleDecInt = /^\s*[\+\-]?\d*\s*$/;
+const simpleFloat  = /^\s*[+-]?(\d*.)?\d+\s*$/;
+const simpleHSLA   = /^\s*hsla\(\s*\d+,\s*\d+%,\s*\d+%(,\s*(\d*.)?\d+)?\s*\)\s*$/;
 
 function parseDecInt(text, min, max) {
     if (!simpleDecInt.test(text)) {
@@ -851,11 +879,44 @@ function parseDecInt(text, min, max) {
 }
 
 function parseDecFloat(text, min, max) {
+    if (!simpleFloat.test(text)) {
+        return NaN;
+    }
+
     const val = parseFloat(text);
     if (isNaN(val) || val < min || val > max) {
         return NaN;
     } else {
         return val;
+    }
+}
+
+function parseHSLA(text) {
+    if (!simpleHSLA.test(text)) {
+        return null;
+    }
+
+    const hueStr = text.substr(text.indexOf('(') + 1);
+    const hue = parseInt(hueStr, 10);
+
+    const satStr = hueStr.substr(hueStr.indexOf(',') + 1);
+    const sat = parseInt(satStr, 10);
+
+    const lightStr = satStr.substr(satStr.indexOf(',') + 1);
+    const light = parseInt(lightStr, 10);
+
+    let alpha = 1;
+    const alphaIndex = lightStr.indexOf(',');
+    if (alphaIndex != -1) {
+        const alphaStr = lightStr.substr(alphaIndex + 1);
+        alpha = parseFloat(alphaStr);
+    }
+
+    if (hue < 0 || hue > 360 || sat < 0 || sat > 100 
+        || light < 0 || light > 100 || alpha < 0 || alpha > 1) {
+        return null;
+    } else {
+        return ColorObj.createHSLA(hue, sat, light, alpha);
     }
 }
 
