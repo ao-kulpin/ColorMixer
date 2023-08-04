@@ -800,64 +800,71 @@ const Master = {
     onChangeColorWheel () {
         const oldHsla = this.curColor.hsla;
         this.curColor = ColorObj.createHSLA(ColorWheel.hue, ColorWheel.saturation, oldHsla.l, oldHsla.a);
-        const hsla = this.curColor.hsla;
-
-        Choice.color = HSLAText.color = this.curColor;
-        Hue.value = hsla.h;
-        Saturation.value = hsla.s;
+        this.updateControls(ColorWheel);
     },
 
     onChangeHue () {
         const oldHsla = this.curColor.hsla;
         this.curColor = ColorObj.createHSLA(Hue.value, ColorWheel.saturation, oldHsla.l, oldHsla.a);
-        const hsla = this.curColor.hsla;
-
-
-        Choice.color = HSLAText.color = this.curColor;
-        Choice.color = this.curColor;
-        ColorWheel.hue = hsla.h;
+        this.updateControls(Hue);
     },
 
     onChangeSaturation () {
         const oldHsla = this.curColor.hsla;
         this.curColor = ColorObj.createHSLA(oldHsla.h, Saturation.value, oldHsla.l, oldHsla.a);
-        const hsla = this.curColor.hsla;
-
-        Choice.color = HSLAText.color = this.curColor;
-        ColorWheel.saturation = hsla.s;
+        this.updateControls(Saturation);
     },
 
     onChangeLightness () {
         const oldHsla = this.curColor.hsla;
         this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, Lightness.value, oldHsla.a);
         const hsla = this.curColor.hsla;
-
-        Choice.color = HSLAText.color = this.curColor;
-        ColorWheel.lightness = hsla.l;
+        this.updateControls(Lightness);
     },
 
     onChangeAlpha () {
         const oldHsla = this.curColor.hsla;
         this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, oldHsla.l, Alpha.value);
-        const hsla = this.curColor.hsla;
-
-        Choice.color = HSLAText.color = this.curColor;
+        this.updateControls(Alpha);
     },
 
     onChangeHSLAText () {
-        const oldHsla = this.curColor.hsla;
         this.curColor = HSLAText.color;
+        this.updateControls(HSLAText);
+    },
+
+    updateControls(gameChanger) {
         const hsla = this.curColor.hsla;
 
         Choice.color = this.curColor;
-        ColorWheel.hue = hsla.h;
-        ColorWheel.saturation = hsla.s;
-        ColorWheel.lightness = hsla.l
-        Hue.value = hsla.h;
-        Saturation.value = hsla.s;
-        Lightness.value = hsla.l
-        Alpha.value = hsla.a
+
+        if (gameChanger !== ColorWheel) {
+            ColorWheel.hue = hsla.h;
+            ColorWheel.saturation = hsla.s;
+            ColorWheel.lightness = hsla.l;
+        }
+
+        if (gameChanger !== Hue) {
+            Hue.value = hsla.h;
+        }
+
+        if (gameChanger !== Saturation) {
+            Saturation.value = hsla.s;
+        }
+
+        if (gameChanger !== Lightness) {
+            Lightness.value = hsla.l
+        }
+
+        if (gameChanger !== Alpha) {
+            Alpha.value = hsla.a
+        }
+
+        if (gameChanger !== HSLAText) {
+            HSLAText.color = this.curColor            
+        }
     }
+
 
 } // end of Master
 
