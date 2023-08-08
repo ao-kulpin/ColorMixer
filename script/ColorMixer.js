@@ -616,6 +616,49 @@ const HSLAText = {
 
 } // end of HSLAText
 
+const RGBAText = {
+    started: false,
+    elementText: null,
+    invalidText: false,
+    _color: null,
+
+    start() {
+        if (!this.started) {
+            this.elementText = document.getElementById('RGBAText');
+            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this._color = ColorObj.createHSLA();
+
+            this.started = true;
+        }
+    },
+
+    onChangeText() {
+        /*
+        const res = parseHSLA(this.elementText.value);
+        if (res === null) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this._color = res;
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            Master.onChangeHSLAText();
+        }
+        */
+    },
+
+    get color () {
+        return this._color;
+    },
+
+    set color (val) {
+        this._color = val;
+        this.elementText.value = this._color.rgba.toString();
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
+    }
+} // end of RGBAText
+
 const ChoiceProps = {
     squareSide: 0.75,
     squareIdent: 0.05,
@@ -783,16 +826,11 @@ const Master = {
             Lightness.start();
             Alpha.start();
             HSLAText.start();
+            RGBAText.start();
             Choice.start();
 
             this.curColor = MasterProps.initColor;
-            const hsla = this.curColor.hsla;
-            Choice.color = HSLAText.color = this.curColor;
-            ColorWheel.hue = Hue.value = hsla.h;
-            ColorWheel.saturation = Saturation.value = hsla.s;
-            ColorWheel.lightness = Lightness.value = hsla.l;
-            Alpha.value = hsla.a;
-
+            this.updateControls(null);
             this.started = true;
         }
     },
@@ -863,9 +901,11 @@ const Master = {
         if (gameChanger !== HSLAText) {
             HSLAText.color = this.curColor            
         }
+
+        if (gameChanger !== RGBAText) {
+            RGBAText.color = this.curColor            
+        }
     }
-
-
 } // end of Master
 
 const simpleDecInt = /^\s*[\+\-]?\d*\s*$/;
