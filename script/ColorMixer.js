@@ -626,15 +626,14 @@ const RGBAText = {
         if (!this.started) {
             this.elementText = document.getElementById('RGBAText');
             this.elementText.addEventListener('input', (event) => this.onChangeText());
-            this._color = ColorObj.createHSLA();
+            this._color = ColorObj.createRGBA();
 
             this.started = true;
         }
     },
 
     onChangeText() {
-        /*
-        const res = parseHSLA(this.elementText.value);
+        const res = parseRGBA(this.elementText.value);
         if (res === null) {
             this.invalidText = true;
             markInvalidText(this.elementText);
@@ -642,9 +641,8 @@ const RGBAText = {
             this._color = res;
             this.invalidText = false;
             unmarkInvalidText(this.elementText);
-            Master.onChangeHSLAText();
+            Master.onChangeRGBAText();
         }
-        */
     },
 
     get color () {
@@ -871,6 +869,11 @@ const Master = {
         this.updateControls(HSLAText);
     },
 
+    onChangeRGBAText () {
+        this.curColor = RGBAText.color;
+        this.updateControls(RGBAText);
+    },
+
     updateControls(gameChanger) {
         const hsla = this.curColor.hsla;
 
@@ -911,6 +914,7 @@ const Master = {
 const simpleDecInt = /^\s*[\+\-]?\d*\s*$/;
 const simpleFloat  = /^\s*[+-]?(\d*.)?\d+\s*$/;
 const simpleHSLA   = /^\s*hsla\(\s*\d+,\s*\d+%,\s*\d+%(,\s*(\d*.)?\d+)?\s*\)\s*$/;
+const simpleRGBA   = /^\s*rgba\(\s*\d+,\s*\d+,\s*\d+(,\s*(\d*.)?\d+)?\s*\)\s*$/;
 
 function parseDecInt(text, min, max) {
     if (!simpleDecInt.test(text)) {
@@ -967,6 +971,34 @@ function parseHSLA(text) {
     }
 }
 
+function parseRGBA(text) {
+    if (!simpleRGBA.test(text)) {
+        return null;
+    }
+
+    const redStr = text.substr(text.indexOf('(') + 1);
+    const red = parseInt(redStr, 10);
+
+    const greenStr = redStr.substr(redStr.indexOf(',') + 1);
+    const green = parseInt(greenStr, 10);
+
+    const blueStr = greenStr.substr(greenStr.indexOf(',') + 1);
+    const blue = parseInt(blueStr, 10);
+
+    let alpha = 1;
+    const alphaIndex = blueStr.indexOf(',');
+    if (alphaIndex != -1) {
+        const alphaStr = blueStr.substr(alphaIndex + 1);
+        alpha = parseFloat(alphaStr);
+    }
+
+    if (red < 0 || red > 255 || green < 0 || green > 255 
+        || blue < 0 || blue > 255 || alpha < 0 || alpha > 1) {
+        return null;
+    } else {
+        return ColorObj.createRGBA(red, green, blue, alpha);
+    }
+}
 
 function markInvalidText(element) {
     element.style.textDecorationLine = 'line-through';
