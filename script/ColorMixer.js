@@ -841,32 +841,32 @@ const Master = {
     },
 
     onChangeColorWheel () {
-        const oldHsla = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(ColorWheel.hue, ColorWheel.saturation, oldHsla.l, oldHsla.a);
+        const {l, a} = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(ColorWheel.hue, ColorWheel.saturation, l, a);
         this.updateControls(ColorWheel);
     },
 
     onChangeHue () {
-        const oldHsla = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(Hue.value, ColorWheel.saturation, oldHsla.l, oldHsla.a);
+        const {s, l, a} = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(Hue.value, s, l, a);
         this.updateControls(Hue);
     },
 
     onChangeSaturation () {
-        const oldHsla = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(oldHsla.h, Saturation.value, oldHsla.l, oldHsla.a);
+        const {h, l, a} = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(h, Saturation.value, l, a);
         this.updateControls(Saturation);
     },
 
     onChangeLightness () {
-        const oldHsla = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, Lightness.value, oldHsla.a);
+        const {h, s, a} = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(h, s, Lightness.value, a);
         this.updateControls(Lightness);
     },
 
     onChangeAlpha () {
-        const oldHsla = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, oldHsla.l, Alpha.value);
+        const {h, s, l} = this.curColor.hsla;
+        this.curColor = ColorObj.createHSLA(h, s, l, Alpha.value);
         this.updateControls(Alpha);
     },
 
