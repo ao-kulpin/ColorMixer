@@ -919,8 +919,8 @@ const Master = {
 
 const simpleDecInt = /^\s*[\+\-]?\d*\s*$/;
 const simpleFloat  = /^\s*[+-]?(\d*.)?\d+\s*$/;
-const simpleHSLA   = /^\s*hsla\(\s*\d+,\s*\d+%,\s*\d+%(,\s*(\d*.)?\d+)?\s*\)\s*$/;
-const simpleRGBA   = /^\s*rgba\(\s*\d+,\s*\d+,\s*\d+(,\s*(\d*.)?\d+)?\s*\)\s*$/;
+const simpleHSLA   = /^\s*hsla\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%(\s*,\s*(\d*.)?\d+)?\s*\)\s*$/;
+const simpleRGBA   = /^\s*rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+(\s*,\s*(\d*.)?\d+)?\s*\)\s*$/;
 
 function parseDecInt(text, min, max) {
     if (!simpleDecInt.test(text)) {
