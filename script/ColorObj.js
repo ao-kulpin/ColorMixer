@@ -30,7 +30,10 @@ class HSLAObj {
     }
 
     toString() {
-        return 'hsla(' + this.#h + ', ' + this.#s + '%, ' + this.#l + '%, ' + this.#a + ')';
+        return 'hsla(' 
+                + Math.round(this.#h) + ', ' 
+                + Math.round(this.#s) + '%, ' 
+                + Math.round(this.#l) + '%, ' + this.#a.toFixed(2) + ')';
     }
 }
 
@@ -70,7 +73,7 @@ class RGBAObj {
             + Math.round(this.#r) + ', ' 
             + Math.round(this.#g) + ', ' 
             + Math.round(this.#b) + ', ' 
-            + this.#a + ')';
+            + this.#a.toFixed(2) + ')';
     }
 
 }

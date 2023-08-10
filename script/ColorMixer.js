@@ -300,7 +300,7 @@ const ColorWheel = {
 
     drawHueText() {
         const ctx = this.context2d;
-        const text = ` H=${this.hue}\xB0 `;
+        const text = ` H=${this._hue.toFixed()}\xB0 `;
         ctx.font = ColorWheelProps.hueFont;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -317,7 +317,7 @@ const ColorWheel = {
 
     drawSaturationText(color) {  // rotated with ray 2
         const ctx = this.context2d;
-        const text = `S=${this.saturation}%`;
+        const text = `S=${this._saturation.toFixed()}%`;
         ctx.font = ColorWheelProps.saturationFont;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -362,7 +362,7 @@ const ColorWheel = {
     },
 
     get hue () {
-        return Math.floor(this._hue);
+        return this._hue;
     },
 
     set hue (val) {
@@ -371,7 +371,7 @@ const ColorWheel = {
     },
 
     get saturation () {
-        return Math.floor(this._saturation);
+        return this._saturation;
     },
 
     set saturation (val) {
@@ -402,7 +402,8 @@ const Hue = {
             this.elementText = document.getElementById('HueText');
             this.rangeControl = new RangeControl(0, 1, 360, 'HueRanger', 'HueSlider', 'HueSliderCenter',
                         () => {
-                            this._value =  this.elementText.value = this.rangeControl.value;
+                            this._value = this.rangeControl.value;
+                            this.elementText.value = this._value.toFixed();
                             unmarkInvalidText(this.elementText);
                             Master.onChangeHue();
                         }
@@ -416,7 +417,8 @@ const Hue = {
         return this._value;
     },
     set value (val) {
-        this._value = this.elementText.value = this.rangeControl.value = val;
+        this._value = this.rangeControl.value = val;
+        this.elementText.value = val.toFixed();
         this.invalidText = false;
         unmarkInvalidText(this.elementText);
     },
@@ -447,7 +449,8 @@ const Saturation = {
             this.elementText.addEventListener('input', (event) => Saturation.onChangeText());
             this.rangeControl = new RangeControl(0, 1, 100, 'SaturRanger', 'SaturSlider', 'SaturSliderCenter',
               () => {
-                this._value = this.elementText.value = this.rangeControl.value;
+                this._value = this.rangeControl.value;
+                this.elementText.value = this._value.toFixed();
                 unmarkInvalidText(this.elementText);
                 Master.onChangeSaturation();
               });
@@ -462,7 +465,8 @@ const Saturation = {
     },
 
     set value (val) {
-        this._value = this.elementText.value = this.rangeControl.value = val;
+        this._value = this.rangeControl.value = val;
+        this.elementText.value = val.toFixed();
         this.invalidText = false;
         unmarkInvalidText(this.elementText);
     },
@@ -492,7 +496,8 @@ const Lightness = {
             this.elementText.addEventListener('input', () => this.onChangeText());
             this.rangeControl = new RangeControl(0, 1, 100, 'LightRanger', 'LightSlider', 'LightSliderCenter',
               () => {
-                this._value = this.elementText.value = this.rangeControl.value;
+                this._value = this.rangeControl.value;
+                this.elementText.value = this._value.toFixed();
                 unmarkInvalidText(this.elementText);
                 Master.onChangeLightness();
               });
@@ -519,7 +524,8 @@ const Lightness = {
     },
 
     set value (val) {
-        this._value = this.elementText.value = this.rangeControl.value = val;
+        this._value = this.rangeControl.value = val;
+        this.elementText.value = val.toFixed();
         this.invalidText = false;
         unmarkInvalidText(this.elementText);
     },
@@ -539,11 +545,11 @@ const Alpha = {
             this.rangeControl = new RangeControl(0, 0.01, 1, 'AlphaRanger', 
                 'AlphaSlider', 'AlphaSliderCenter',
                 () => {
-                    this._value = this.elementText.value = this.rangeControl.value;
+                    this._value = this.rangeControl.value;
+                    this.elementText.value = this._value.toFixed(2)
                     unmarkInvalidText(this.elementText);
                     Master.onChangeAlpha();
-                },
-                (val) => {return val.toFixed(2)});
+                });
             this.rangeControl.start();
 
             this.started = true;
@@ -567,7 +573,8 @@ const Alpha = {
     },
 
     set value (val) {
-        this._value = this.elementText.value = this.rangeControl.value = val;
+        this._value = this.rangeControl.value = val;
+        this.elementText.value = val.toFixed(2);
         this.invalidText = false;
         unmarkInvalidText(this.elementText);
     }
@@ -854,7 +861,6 @@ const Master = {
     onChangeLightness () {
         const oldHsla = this.curColor.hsla;
         this.curColor = ColorObj.createHSLA(oldHsla.h, oldHsla.s, Lightness.value, oldHsla.a);
-        const hsla = this.curColor.hsla;
         this.updateControls(Lightness);
     },
 
