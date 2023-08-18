@@ -1032,7 +1032,8 @@ class RangeControl {
     #elementCenter = null;
     #rect          = null;
     #rectSlider    = null;
-    #sliderActive  = false;
+    #mouseActive   = false;
+    #kboardActive  = false;
 
     constructor(min, step, max, id, idSlider, idCenter, onChange, rounder) {
         this.#min      = min;
@@ -1050,12 +1051,15 @@ class RangeControl {
     start() {
         if( !this.#started ) {
             this.#element = document.getElementById(this.#id);
+            this.#element.setAttribute('tabindex', '0'); // make the ranger focusable
+
             this.#elementSlider = document.getElementById(this.#idSlider);
             this.#elementCenter = document.getElementById(this.#idCenter);
             this.#getViewPort();
             this.#element.addEventListener('mousedown',
                (event)=> {
-                  this.#sliderActivate();
+                  this.#mouseActive = true;
+                  this.#sliderToggle();
                   this.#sliderMove(event.clientX);
                   this.#getValue(event.clientX);
                   this.#onChange();
@@ -1063,25 +1067,83 @@ class RangeControl {
 
                this.#element.addEventListener('mousemove', 
                (event)=> {
-                  if (this.#sliderActive) {
+                  if (this.#mouseActive) {
                     this.#sliderMove(event.clientX);
                     this.#getValue(event.clientX);
                     this.#onChange();
                 }
                });
 
+            // keyboard events
+            this.#element.addEventListener('focus',   () => this.#onFocus());            
+            this.#element.addEventListener('blur',    () => this.#onBlur());
+            this.#element.addEventListener('keydown', (event) => this.#onKeydown(event));
 
             ['mouseup', 'mouseleave'].forEach(
                 // the same handler for the a few events
                 eventName => {            
                     this.#element.addEventListener(eventName, 
-                            () => this.#sliderDeactivate()
+                    () => { 
+                        this.#mouseActive = false;
+                        this.#sliderToggle();
+                    }
 
             )});
 
             this.#started = true;
         }
     }
+
+    #onFocus() {
+        this.#kboardActive = true;
+        this.#sliderToggle();
+
+        // get focus
+        this.#element.style.borderColor = 'black';
+       this.#element.style.borderWidth = '2px';
+    }
+
+    #onBlur() {
+        this.#kboardActive = false;
+        this.#sliderToggle();
+
+        // loose focus
+        this.#element.style.borderColor = 'gray';
+        this.#element.style.borderWidth = '1px';
+    }
+
+    #onKeydown(event) {
+        let newValue = this.#value;
+
+        switch (event.key) {
+            case 'ArrowUp':
+            case 'ArrowRight':
+                if (this.#value >= this.#max) {
+                    // cyclic movement
+                    newValue = this.#min;
+                } else {
+                    newValue = Math.min(this.#value + this.#step, this.#max);
+                }
+                break;
+
+            case 'ArrowDown':
+            case 'ArrowLeft':
+                if (this.#value <= this.#min) {
+                    // cyclic movement
+                    newValue = this.#max;
+                } else {
+                    newValue = Math.max(this.#value - this.#step, this.#min);
+                }
+                break;
+        }
+
+        if (newValue !== this.#value) {
+            this.#value = newValue;
+            this.#sliderReset();
+            this.#onChange();
+        }
+    }
+
 
     #getViewPort() {
         this.#rect = this.#element.getBoundingClientRect();
@@ -1096,14 +1158,14 @@ class RangeControl {
         this.#elementSlider.style.left = left;
     }
 
-    #sliderActivate() {
-        this.#sliderActive = true;
-        this.#elementCenter.setAttribute('stroke', '#FFF');
-    }
-
-    #sliderDeactivate() {
-        this.#sliderActive = false;
-        this.#elementCenter.setAttribute('stroke', '#000');
+    #sliderToggle() {
+        if (this.#mouseActive || this.#kboardActive) {
+            // activate the slider
+            this.#elementCenter.setAttribute('stroke', '#FFF');
+        } else {
+            // deactivate the slider
+            this.#elementCenter.setAttribute('stroke', '#000');
+        }
     }
 
     #getValue(x) {
