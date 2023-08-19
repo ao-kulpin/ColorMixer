@@ -12,9 +12,9 @@
             </cavas>
           </div>  
           <div id="HueDiv">
-              <span>
+              <p class="ctrl-label">
                 Hue (0-360&deg;): 
-              </span>
+              </p>
               <div id="HueRanger" class="ranger">
                 <svg id="HueSlider" class="slider">
                   <circle id="HueSliderCenter" cx="0.5em" cy="0.5em" r="0.4em" fill="none" stroke-width="2" stroke="#000"></circle>
@@ -24,9 +24,9 @@
               <input type="number" min="0" max="360" step="1" id="HueText" >
           </div>
           <div id="SaturationDiv">
-              <span>
+            <p class="ctrl-label">
                 Saturation (0-100%): 
-              </span>    
+            </p>    
                 
               <div id="SaturRanger" class="ranger">
                 <svg id="SaturSlider" class="slider">
@@ -37,9 +37,9 @@
               <input type="number" value="100" min="0" max="100" step="1" id="SaturationText" >
           </div>
           <div id="LightDiv">
-            <span>
+            <p class="ctrl-label">
               Lightness (0-100%): 
-            </span>    
+            </p>    
               
             <div id="LightRanger" class="ranger">
               <svg id="LightSlider" class="slider">
@@ -51,9 +51,9 @@
           </div>
 
           <div id="AlphaDiv">
-            <span>
+            <p class="ctrl-label">
               Alpha (0-1): 
-            </span>    
+            </p>    
               
             <div id="AlphaRanger" class="ranger">
               <svg id="AlphaSlider" class="slider">
@@ -65,12 +65,12 @@
           </div>
 
           <div id="HSLATextDiv">
-            <p id="HSLATextTitle">HSLA text:</p>
+            <p class="ctrl-label">HSLA text:</p>
             <input type="text" value="hsla(0, 0%, 0%, 1)" id="HSLAText" >
           </div>
 
           <div id="RGBATextDiv">
-            <p id="RGBATextTitle">RGBA text:</p>
+            <p class="ctrl-label">RGBA text:</p>
             <input type="text" value="rgb(0, 0, 0, 1)" id="RGBAText" >
           </div>
 

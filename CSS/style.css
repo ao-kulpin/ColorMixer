@@ -1,6 +1,6 @@
 .wrap {
     width: 100%;
-    background-color: grey;
+    background-color: lightblue;
 }
 
 #UpperHalfDiv {
@@ -38,27 +38,27 @@
 }
 
 #HueDiv {
-    background-color: green;
+    // background-color: green;
 }
 
 #SaturationDiv {
-    background-color: lightblue;
+    // background-color: lightblue;
 }
 
 #LightDiv {
-    background-color: lightgreen;
+    // background-color: lightgreen;
 }
 
 #AlphaDiv {
-    background-color: lightgoldenrodyellow;
+    //background-color: lightgoldenrodyellow;
 }
 
 #HSLATextDiv {
-    background-color: lightgreen;
+    //background-color: lightgreen;
 }
 
 #RGBATextDiv {
-    background-color: lightblue;
+    // background-color: lightblue;
 }
 
 #WheelSlider {
@@ -87,8 +87,8 @@
     left: 0;
 }
 
-#HSLATextTitle, #RGBATextTitle {
-    margin: 0 auto; 
+.ctrl-label {
+    margin: 0.15em 0 0 0; 
 }
 
 h2,h5 {
