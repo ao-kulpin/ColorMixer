@@ -74,6 +74,21 @@
             <input type="text" value="rgb(0, 0, 0, 1)" id="RGBAText" >
           </div>
 
+          <div id="RedDiv">
+            <p class="ctrl-label">
+                Red component (0-255): 
+            </p>    
+                
+              <div id="RedRanger" class="ranger">
+                <svg id="RedSlider" class="slider">
+                  <circle id="RedSliderCenter" cx="0.5em" cy="0.5em" r="0.4em" fill="none" stroke-width="2" stroke="#000"></circle>
+                  <circle cx="0.5em" cy="0.5em" r="0.2em" fill="rgba(0,0,0,0)" stroke-width="2" stroke="#fff"></circle>
+                </svg>                
+              </div>
+              <input type="number" value="0" min="0" max="255" step="1" id="RedText" >
+          </div>
+
+
         </div>
       <link rel="stylesheet" href="./CSS/style.css">
       <script src="./script/ColorObj.js"></script>

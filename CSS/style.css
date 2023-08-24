@@ -30,7 +30,7 @@
     background-color: darkgrey;
 }
 
-#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv{
+#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv, #RedDiv{
     position: relative;
     overflow: visible;
     display: block;        

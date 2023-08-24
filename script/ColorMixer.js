@@ -583,6 +583,55 @@ const Alpha = {
     }
 } // end of Alpha
 
+const Red = {
+    started: false,
+    elementText: null,
+    invalidText: false,
+    rangeControl: null,
+    _value: 128,
+
+    start() {
+        if (!this.started) {
+            this.elementText = document.getElementById('RedText');
+            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this.rangeControl = new RangeControl(0, 1, 255, 'RedRanger', 'RedSlider', 'RedSliderCenter',
+              () => {
+                this._value = this.rangeControl.value;
+                this.elementText.value = this._value.toFixed();
+                unmarkInvalidText(this.elementText);
+                Master.onChangeRed();
+              });
+            this.rangeControl.start();
+
+            this.started = true;
+        }
+    },
+
+    get value () {
+        return this._value;
+    },
+
+    set value (val) {
+        this._value = this.rangeControl.value = val;
+        this.elementText.value = val.toFixed();
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
+    },
+    onChangeText() {
+        const n = parseDecInt(this.elementText.value, 0, 255);
+        if (isNaN(n)) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            this._value = this.rangeControl.value = n;
+            Master.onChangeRed();
+        }
+    }
+} // end of Red
+
+
 const HSLAText = {
     started: false,
     elementText: null,
@@ -833,6 +882,7 @@ const Master = {
             Saturation.start();
             Lightness.start();
             Alpha.start();
+            Red.start();
             HSLAText.start();
             RGBAText.start();
             Choice.start();
@@ -873,6 +923,12 @@ const Master = {
         this.updateControls(Alpha);
     },
 
+    onChangeRed () {
+        const {g, b, a} = this.curColor.rgba;
+        this.curColor = ColorObj.createRGBA(Red.value, g, b, a);
+        this.updateControls(Red);
+    },
+
     onChangeHSLAText () {
         this.curColor = HSLAText.color;
         this.updateControls(HSLAText);
@@ -885,6 +941,7 @@ const Master = {
 
     updateControls(gameChanger) {
         const hsla = this.curColor.hsla;
+        const rgba = this.curColor.rgba;
 
         Choice.color = this.curColor;
 
@@ -903,19 +960,23 @@ const Master = {
         }
 
         if (gameChanger !== Lightness) {
-            Lightness.value = hsla.l
+            Lightness.value = hsla.l;
         }
 
         if (gameChanger !== Alpha) {
-            Alpha.value = hsla.a
+            Alpha.value = hsla.a;
+        }
+
+        if (gameChanger !== Red) {
+            Red.value = rgba.r;
         }
 
         if (gameChanger !== HSLAText) {
-            HSLAText.color = this.curColor            
+            HSLAText.color = this.curColor;           
         }
 
         if (gameChanger !== RGBAText) {
-            RGBAText.color = this.curColor            
+            RGBAText.color = this.curColor;         
         }
     }
 } // end of Master
