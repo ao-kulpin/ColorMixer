@@ -30,35 +30,11 @@
     background-color: darkgrey;
 }
 
-#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv, #RedDiv{
+#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv, #RedDiv, #GreenDiv, #BlueDiv{
     position: relative;
     overflow: visible;
     display: block;        
     top: 0.5em; 
-}
-
-#HueDiv {
-    // background-color: green;
-}
-
-#SaturationDiv {
-    // background-color: lightblue;
-}
-
-#LightDiv {
-    // background-color: lightgreen;
-}
-
-#AlphaDiv {
-    //background-color: lightgoldenrodyellow;
-}
-
-#HSLATextDiv {
-    //background-color: lightgreen;
-}
-
-#RGBATextDiv {
-    // background-color: lightblue;
 }
 
 #WheelSlider {

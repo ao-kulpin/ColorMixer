@@ -631,6 +631,103 @@ const Red = {
     }
 } // end of Red
 
+const Green = {
+    started: false,
+    elementText: null,
+    invalidText: false,
+    rangeControl: null,
+    _value: 128,
+
+    start() {
+        if (!this.started) {
+            this.elementText = document.getElementById('GreenText');
+            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this.rangeControl = new RangeControl(0, 1, 255, 'GreenRanger', 'GreenSlider', 'GreenSliderCenter',
+              () => {
+                this._value = this.rangeControl.value;
+                this.elementText.value = this._value.toFixed();
+                unmarkInvalidText(this.elementText);
+                Master.onChangeGreen();
+              });
+            this.rangeControl.start();
+
+            this.started = true;
+        }
+    },
+
+    get value () {
+        return this._value;
+    },
+
+    set value (val) {
+        this._value = this.rangeControl.value = val;
+        this.elementText.value = val.toFixed();
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
+    },
+    onChangeText() {
+        const n = parseDecInt(this.elementText.value, 0, 255);
+        if (isNaN(n)) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            this._value = this.rangeControl.value = n;
+            Master.onChangeGreen();
+        }
+    }
+} // end of Green
+
+const Blue = {
+    started: false,
+    elementText: null,
+    invalidText: false,
+    rangeControl: null,
+    _value: 128,
+
+    start() {
+        if (!this.started) {
+            this.elementText = document.getElementById('BlueText');
+            this.elementText.addEventListener('input', (event) => this.onChangeText());
+            this.rangeControl = new RangeControl(0, 1, 255, 'BlueRanger', 'BlueSlider', 'BlueSliderCenter',
+              () => {
+                this._value = this.rangeControl.value;
+                this.elementText.value = this._value.toFixed();
+                unmarkInvalidText(this.elementText);
+                Master.onChangeBlue();
+              });
+            this.rangeControl.start();
+
+            this.started = true;
+        }
+    },
+
+    get value () {
+        return this._value;
+    },
+
+    set value (val) {
+        this._value = this.rangeControl.value = val;
+        this.elementText.value = val.toFixed();
+        this.invalidText = false;
+        unmarkInvalidText(this.elementText);
+    },
+    onChangeText() {
+        const n = parseDecInt(this.elementText.value, 0, 255);
+        if (isNaN(n)) {
+            this.invalidText = true;
+            markInvalidText(this.elementText);
+        } else {
+            this.invalidText = false;
+            unmarkInvalidText(this.elementText);
+            this._value = this.rangeControl.value = n;
+            Master.onChangeBlue();
+        }
+    }
+} // end of Blue
+
+
 
 const HSLAText = {
     started: false,
@@ -883,6 +980,8 @@ const Master = {
             Lightness.start();
             Alpha.start();
             Red.start();
+            Green.start();
+            Blue.start();
             HSLAText.start();
             RGBAText.start();
             Choice.start();
@@ -929,6 +1028,18 @@ const Master = {
         this.updateControls(Red);
     },
 
+    onChangeGreen () {
+        const {r, b, a} = this.curColor.rgba;
+        this.curColor = ColorObj.createRGBA(r, Green.value, b, a);
+        this.updateControls(Green);
+    },
+
+    onChangeBlue () {
+        const {r, g, a} = this.curColor.rgba;
+        this.curColor = ColorObj.createRGBA(r, g, Blue.value, a);
+        this.updateControls(Blue);
+    },
+
     onChangeHSLAText () {
         this.curColor = HSLAText.color;
         this.updateControls(HSLAText);
@@ -969,6 +1080,14 @@ const Master = {
 
         if (gameChanger !== Red) {
             Red.value = rgba.r;
+        }
+
+        if (gameChanger !== Green) {
+            Green.value = rgba.g;
+        }
+
+        if (gameChanger !== Blue) {
+            Blue.value = rgba.b;
         }
 
         if (gameChanger !== HSLAText) {
