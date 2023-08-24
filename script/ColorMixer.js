@@ -306,12 +306,15 @@ const ColorWheel = {
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'black';
         const metrics = ctx.measureText(text);
-        const width = metrics.width;
+        const width = metrics.width 
+                        + SliderProps.radius1; // avoid ovelapping with the slider
         const height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
         const r = Math.sqrt(width*width + height*height) / 2;
         const hueRad = this._hue * Math.PI / 180;
-        const x = this.toCanvasX(this.centerX + (this.wheelR + r) * Math.cos(hueRad));
-        const y = this.toCanvasY(this.centerY + (this.wheelR + r) * Math.sin(hueRad)); 
+
+        const wheelR = this.wheelR + r;
+        const x = this.toCanvasX(this.centerX + wheelR * Math.cos(hueRad));
+        const y = this.toCanvasY(this.centerY + wheelR * Math.sin(hueRad)); 
         ctx.fillText(text, x, y);
     },
 
