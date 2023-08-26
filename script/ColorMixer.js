@@ -824,7 +824,10 @@ const ChoiceProps = {
     borderDash: [1, 0],
     tailMargin: 0.04,
     tailRowSize: 7,
-    tailCornerR: 0.03
+    tailCornerR: 0.03,
+
+    triangleSide: 0.4,
+    circleR: 0.27
 }
 
 const Choice = {
@@ -838,6 +841,14 @@ const Choice = {
     _alpha: 1,
     _color: null,
 
+    redCenterX: 0,
+    redCenterY: 0,
+    greenCenterX: 0,
+    greenCenterY: 0,
+    blueCenterX: 0,
+    blueCenterY: 0,
+    circleR: 0,
+
     start() {
         if (!this.started) {
             this.element = document.getElementById('Choice');
@@ -848,6 +859,7 @@ const Choice = {
 
             this.context2d = this.element.getContext("2d");
             this.getViewPort();
+            this.getCenters();
 
             this.started = true;
         }
@@ -866,10 +878,27 @@ const Choice = {
         this.rect = this.element.getBoundingClientRect();
     },
 
+    getCenters() {
+        const triangleSide = this.rect.width * ChoiceProps.triangleSide;
+        const triangleHeight = triangleSide * Math.sqrt(3) / 2;
+
+        this.redCenterX = this.rect.width / 2;
+        this.redCenterY = (this.rect.height - triangleHeight) / 2;
+
+        this.greenCenterX = this.redCenterX - triangleSide / 2;
+        this.greenCenterY = this.redCenterY + triangleHeight;
+
+        this.blueCenterX = this.greenCenterX + triangleSide;
+        this.blueCenterY = this.greenCenterY;
+
+        this.circleR = this.rect.width * ChoiceProps.circleR;
+    },
+
     draw() {
         this.context2d.clearRect(0, 0, this.rect.width, this.rect.height);
         this.drawBackground();
-        this.drawChoice();
+        // this.drawChoice();
+        this.drawCircles();
     },
 
     drawChoice() {
@@ -881,6 +910,52 @@ const Choice = {
 
         this.drawRoundedSquare(side, ident, ident, cornerR, hsla, ChoiceProps.borderStyle, 
                                 ChoiceProps.borderWidth, ChoiceProps.borderDash);
+    },
+
+    clipCircle(centerX, centerY) {
+        const ctx = this.context2d;
+        const path = new Path2D();
+        path.arc(centerX, centerY, this.circleR, 0, 2 * Math.PI);
+        ctx.clip(path);
+    },
+
+    drawClippedZone(clipTag, color) {
+        const ctx = this.context2d;
+
+        ctx.save();
+
+        if (clipTag & 1) {
+            this.clipCircle(this.redCenterX, this.redCenterY);
+        }
+
+        if (clipTag & 2) {
+            this.clipCircle(this.greenCenterX, this.greenCenterY);
+        }
+
+        if (clipTag & 4) {
+            this.clipCircle(this.blueCenterX, this.blueCenterY);
+        }
+
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, this.rect.width, this.rect.height);
+
+        ctx.restore();
+    },
+
+    drawCircles() {
+        const {r, g, b, a} = this.color.rgba;
+
+        this.drawClippedZone(1, ColorObj.createRGBA(r, 0, 0, a).rgba.toString());
+        this.drawClippedZone(2, ColorObj.createRGBA(0, g, 0, a).rgba.toString());
+        this.drawClippedZone(4, ColorObj.createRGBA(0, 0, b, a).rgba.toString());
+
+        this.drawClippedZone(3, ColorObj.createRGBA(r, g, 0, a).rgba.toString());
+        this.drawClippedZone(5, ColorObj.createRGBA(r, 0, b, a).rgba.toString());
+        this.drawClippedZone(6, ColorObj.createRGBA(0, g, b, a).rgba.toString());
+
+        this.drawClippedZone(7, this.color.rgba.toString());
+
+        
     },
 
     drawBackground() {
