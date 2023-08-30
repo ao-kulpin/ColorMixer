@@ -826,8 +826,8 @@ const ChoiceProps = {
     tailRowSize: 7,
     tailCornerR: 0.03,
 
-    triangleSide: 0.4,
-    circleR: 0.27
+    triangleSide: 0.2,
+    circleR: 0.3
 }
 
 const Choice = {
@@ -843,10 +843,13 @@ const Choice = {
 
     redCenterX: 0,
     redCenterY: 0,
+    redCirclePath: null,
     greenCenterX: 0,
     greenCenterY: 0,
+    greenCirclePath: null,
     blueCenterX: 0,
     blueCenterY: 0,
+    blueCirclePath: null,
     circleR: 0,
 
     start() {
@@ -879,19 +882,25 @@ const Choice = {
     },
 
     getCenters() {
+        this.circleR = this.rect.width * ChoiceProps.circleR;
+
         const triangleSide = this.rect.width * ChoiceProps.triangleSide;
         const triangleHeight = triangleSide * Math.sqrt(3) / 2;
 
         this.redCenterX = this.rect.width / 2;
         this.redCenterY = (this.rect.height - triangleHeight) / 2;
+        this.redCirclePath = new Path2D;
+        this.redCirclePath.arc(this.redCenterX, this.redCenterY, this.circleR, 0, 2 * Math.PI)
 
         this.greenCenterX = this.redCenterX - triangleSide / 2;
         this.greenCenterY = this.redCenterY + triangleHeight;
+        this.greenCirclePath = new Path2D;
+        this.greenCirclePath.arc(this.greenCenterX, this.greenCenterY, this.circleR, 0, 2 * Math.PI)
 
         this.blueCenterX = this.greenCenterX + triangleSide;
         this.blueCenterY = this.greenCenterY;
-
-        this.circleR = this.rect.width * ChoiceProps.circleR;
+        this.blueCirclePath = new Path2D;
+        this.blueCirclePath.arc(this.blueCenterX, this.blueCenterY, this.circleR, 0, 2 * Math.PI)
     },
 
     draw() {
@@ -919,21 +928,24 @@ const Choice = {
         ctx.clip(path);
     },
 
-    drawClippedZone(clipTag, color) {
+    drawClippedZone(clipTag,    // 1 - clip red circle
+                                // 2 - clip green circle    
+                                // 4 - clip blue circle    
+                    color) {
         const ctx = this.context2d;
 
         ctx.save();
 
         if (clipTag & 1) {
-            this.clipCircle(this.redCenterX, this.redCenterY);
+            ctx.clip(this.redCirclePath);
         }
 
         if (clipTag & 2) {
-            this.clipCircle(this.greenCenterX, this.greenCenterY);
+            ctx.clip(this.greenCirclePath);
         }
 
         if (clipTag & 4) {
-            this.clipCircle(this.blueCenterX, this.blueCenterY);
+            ctx.clip(this.blueCirclePath);
         }
 
         ctx.fillStyle = color;
@@ -945,15 +957,26 @@ const Choice = {
     drawCircles() {
         const {r, g, b, a} = this.color.rgba;
 
+        // draw red circle
         this.drawClippedZone(1, ColorObj.createRGBA(r, 0, 0, a).rgba.toString());
+
+        // draw green circle
         this.drawClippedZone(2, ColorObj.createRGBA(0, g, 0, a).rgba.toString());
+
+        // draw blue circle
         this.drawClippedZone(4, ColorObj.createRGBA(0, 0, b, a).rgba.toString());
 
-        this.drawClippedZone(3, ColorObj.createRGBA(r, g, 0, a).rgba.toString());
-        this.drawClippedZone(5, ColorObj.createRGBA(r, 0, b, a).rgba.toString());
-        this.drawClippedZone(6, ColorObj.createRGBA(0, g, b, a).rgba.toString());
+        // intesection between red and green circles
+        this.drawClippedZone(1 + 2, ColorObj.createRGBA(r, g, 0, a).rgba.toString());
 
-        this.drawClippedZone(7, this.color.rgba.toString());
+        // intesection between red and blue circles
+        this.drawClippedZone(1 + 4, ColorObj.createRGBA(r, 0, b, a).rgba.toString());
+
+        // intesection between green and blue circles
+        this.drawClippedZone(2 + 4, ColorObj.createRGBA(0, g, b, a).rgba.toString());
+
+        // intesection between red, green and blue circles
+        this.drawClippedZone(1 + 2 + 4, this.color.rgba.toString());
 
         
     },
