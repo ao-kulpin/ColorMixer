@@ -905,7 +905,8 @@ const Choice = {
 
     draw() {
         this.context2d.clearRect(0, 0, this.rect.width, this.rect.height);
-        this.drawBackground();
+        // this.drawRectBackground();
+         this.drawRoundBackground();
         // this.drawChoice();
         this.drawCircles();
     },
@@ -981,7 +982,7 @@ const Choice = {
         
     },
 
-    drawBackground() {
+    drawRectBackground() {
         const width = this.rect.width;
         const side = width * ChoiceProps.squareSide;
         const ident = 2 * width * ChoiceProps.squareIdent;
@@ -1006,9 +1007,57 @@ const Choice = {
                 this.drawRoundedSquare(tailSide, tailIdentX, tailIdentY, tailCornerR, 
                                         RandomColor.getColor().hsla.toString());    
             }
-        }
-        
-        
+        }      
+    },
+
+    overlapCircle(tailX, tailY, circleSideR2, centerX, centerY) {
+        return MyMath.square(tailX - centerX) + MyMath.square(tailY - centerY) < circleSideR2;
+
+    },
+
+    overlapCircles(tailX, tailY, circleSideR2) {
+        return this.overlapCircle(tailX, tailY, circleSideR2,
+                                  this.redCenterX, this.redCenterY)
+                || this.overlapCircle(tailX, tailY, circleSideR2,
+                                    this.greenCenterX, this.greenCenterY)
+                || this.overlapCircle(tailX, tailY, circleSideR2,
+                                        this.blueCenterX, this.blueCenterY);
+        },
+
+    drawRoundBackground() {
+        const circleR = this.circleR
+
+        // pavement zone
+        const paveTop    = this.redCenterY - circleR;
+        const paveLeft   = this.greenCenterX - circleR;
+        const paveRight  = this.blueCenterX + circleR;
+        const paveBottom = this.blueCenterY + circleR;
+
+        const tailMargin = this.rect.width * ChoiceProps.tailMargin;
+        const paveSide = paveRight - paveLeft + 2 * tailMargin;
+        const tailSideMargin = (paveSide + tailMargin) / ChoiceProps.tailRowSize;
+        const tailSide = tailSideMargin - tailMargin;
+        const tailCornerR = paveSide * ChoiceProps.tailCornerR;
+
+        const tailSide_2 = tailSide / 2;
+        const tailSideR = tailSide * Math.SQRT1_2;
+        const circleSideR = this.circleR + tailSideR;
+        const circleSideR2 = MyMath.square(circleSideR);
+
+        for (let row = 0; row < ChoiceProps.tailRowSize; ++row) {
+            const tailIdentY = paveTop - tailMargin + row * tailSideMargin;
+            for (let col = 0; col < ChoiceProps.tailRowSize; ++col) {
+                const tailIdentX = paveLeft -tailMargin + col * tailSideMargin;
+   
+                if( this.overlapCircles(tailIdentX + tailSide_2, 
+                                        tailIdentY + tailSide_2, circleSideR2) ) {
+                    this.drawRoundedSquare(tailSide, tailIdentX, tailIdentY, tailCornerR, 
+                                        RandomColor.getColor().hsla.toString());
+                }
+            }
+        }      
+
+
     },
 
     drawRoundedSquare(side, identX, identY, cornerR, color, borderColor, borderWidth, borderDash) {
@@ -1056,7 +1105,7 @@ const RandomColor = {
         return ColorObj.createHSLA (
                     Math.random() * 360,        // Random hue: 0-360
                     50 + Math.random() * 50,    // Random saturation: 50-100%
-                    50 + Math.random() * 50,    // Random Lightness: 50-100%
+                    40 + Math.random() * 20,    // Random Lightness: 40-60%
                     1                           // alpha = 1
                 );
     }
@@ -1476,6 +1525,12 @@ class RangeControl {
         this.#sliderReset();
     }
 } // end of RangeControl
+
+class MyMath {
+    static square(x) {
+        return x * x;
+    }
+}
 
 Master.start();
 

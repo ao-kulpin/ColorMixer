@@ -27,7 +27,7 @@
 }
 
 #Choice {
-    background-color: darkgrey;
+    background-color: white;
 }
 
 #HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv, #RedDiv, #GreenDiv, #BlueDiv{
