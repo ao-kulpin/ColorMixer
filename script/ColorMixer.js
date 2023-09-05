@@ -1526,12 +1526,6 @@ class RangeControl {
     }
 } // end of RangeControl
 
-class MyMath {
-    static square(x) {
-        return x * x;
-    }
-}
-
 Master.start();
 
  /// alert('script finish');
