@@ -822,9 +822,9 @@ const ChoiceProps = {
     bacgroundBorderStyle: 'white',
     bacgroundColor: 'black',
     borderDash: [1, 0],
-    tailMargin: 0.04,
-    tailRowSize: 7,
-    tailCornerR: 0.03,
+    tailMargin: 0.005,
+    tailRowSize: 3,
+    tailCornerR: 0.08,
 
     triangleSide: 0.2,
     circleR: 0.3
@@ -1105,7 +1105,7 @@ const RandomColor = {
         return ColorObj.createHSLA (
                     Math.random() * 360,        // Random hue: 0-360
                     50 + Math.random() * 50,    // Random saturation: 50-100%
-                    40 + Math.random() * 20,    // Random Lightness: 40-60%
+                    30 + Math.random() * 20,    // Random Lightness: 30-50%
                     1                           // alpha = 1
                 );
     }
