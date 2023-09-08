@@ -94,6 +94,11 @@ class ColorObj {
         }
     }
 
+    mostContrast () {
+        const {r, g, b, a} = this.#rgbaObj;
+        return createRGBA(toBound(r), toBound(g), toBound(b), a);
+    }
+
     get hsla() {
         return this.#hslaObj;
     }
@@ -144,4 +149,9 @@ class ColorObj {
             a            
           );
     }
+
+    static toBound(x) {
+        return 255 - x > x ? 255 : 0;
+    }
+    
 }
