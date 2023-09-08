@@ -1132,7 +1132,7 @@ const RandomColor = {
 
 
 const MasterProps = {
-    initColor: ColorObj.createHSLA(45, 50, 50, 0.5)
+    initColor: ColorObj.createHSLA(37, 33, 70, 0.5)
 }
 
 const Master = {
