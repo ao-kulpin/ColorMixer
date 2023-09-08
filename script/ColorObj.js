@@ -95,8 +95,10 @@ class ColorObj {
     }
 
     mostContrast () {
-        const {r, g, b, a} = this.#rgbaObj;
-        return createRGBA(toBound(r), toBound(g), toBound(b), a);
+        const rgba = this.#rgbaObj;
+        const toBound = ColorObj.toBound;
+        return ColorObj.createRGBA(toBound(rgba.r), toBound(rgba.g),
+                                   toBound(rgba.b), rgba.a);
     }
 
     get hsla() {

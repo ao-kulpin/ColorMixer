@@ -827,7 +827,8 @@ const ChoiceProps = {
     tailCornerR: 0.08,
 
     triangleSide: 0.2,
-    circleR: 0.3
+    circleR: 0.3,
+    circleBorder: 15
 }
 
 const Choice = {
@@ -922,17 +923,10 @@ const Choice = {
                                 ChoiceProps.borderWidth, ChoiceProps.borderDash);
     },
 
-    clipCircle(centerX, centerY) {
-        const ctx = this.context2d;
-        const path = new Path2D();
-        path.arc(centerX, centerY, this.circleR, 0, 2 * Math.PI);
-        ctx.clip(path);
-    },
-
     drawClippedZone(clipTag,    // 1 - clip red circle
                                 // 2 - clip green circle    
                                 // 4 - clip blue circle    
-                    color) {
+                    fillColor, strokeColor) {
         const ctx = this.context2d;
 
         ctx.save();
@@ -949,8 +943,27 @@ const Choice = {
             ctx.clip(this.blueCirclePath);
         }
 
-        ctx.fillStyle = color;
+        // fill (intersection of) circles
+
+        ctx.fillStyle = fillColor.rgba.toString();
         ctx.fillRect(0, 0, this.rect.width, this.rect.height);
+
+        // draw borders of circles
+
+        ctx.strokeStyle = strokeColor.rgba.toString();
+        ctx.lineWidth = ChoiceProps.circleBorder;
+
+        if (clipTag & 1) {
+            ctx.stroke(this.redCirclePath);
+        }
+
+        if (clipTag & 2) {
+            ctx.stroke(this.greenCirclePath);
+        }
+
+        if (clipTag & 4) {
+            ctx.stroke(this.blueCirclePath);
+        }
 
         ctx.restore();
     },
@@ -959,25 +972,31 @@ const Choice = {
         const {r, g, b, a} = this.color.rgba;
 
         // draw red circle
-        this.drawClippedZone(1, ColorObj.createRGBA(r, 0, 0, a).rgba.toString());
+        const rcolor = ColorObj.createRGBA(r, 0, 0, a);
+        this.drawClippedZone(1, rcolor, rcolor.mostContrast());
 
         // draw green circle
-        this.drawClippedZone(2, ColorObj.createRGBA(0, g, 0, a).rgba.toString());
+        const gcolor = ColorObj.createRGBA(0, g, 0, a);
+        this.drawClippedZone(2, gcolor, gcolor.mostContrast());
 
         // draw blue circle
-        this.drawClippedZone(4, ColorObj.createRGBA(0, 0, b, a).rgba.toString());
+        const bcolor = ColorObj.createRGBA(0, 0, b, a);
+        this.drawClippedZone(4, bcolor, bcolor.mostContrast());
 
         // intesection between red and green circles
-        this.drawClippedZone(1 + 2, ColorObj.createRGBA(r, g, 0, a).rgba.toString());
+        const rgcolor = ColorObj.createRGBA(r, g, 0, a);
+        this.drawClippedZone(1 + 2, rgcolor, rgcolor.mostContrast());
 
         // intesection between red and blue circles
-        this.drawClippedZone(1 + 4, ColorObj.createRGBA(r, 0, b, a).rgba.toString());
+        const rbcolor = ColorObj.createRGBA(r, 0, b, a);
+        this.drawClippedZone(1 + 4, rbcolor, rbcolor.mostContrast());
 
         // intesection between green and blue circles
-        this.drawClippedZone(2 + 4, ColorObj.createRGBA(0, g, b, a).rgba.toString());
+        const gbcolor = ColorObj.createRGBA(0, g, b, a);
+        this.drawClippedZone(2 + 4, gbcolor, gbcolor.mostContrast());
 
         // intesection between red, green and blue circles
-        this.drawClippedZone(1 + 2 + 4, this.color.rgba.toString());
+        this.drawClippedZone(1 + 2 + 4, this.color, this.color.mostContrast());
 
         
     },
