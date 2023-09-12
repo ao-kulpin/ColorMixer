@@ -1126,6 +1126,31 @@ const Choice = {
     }
 }  // end of Choice
 
+const PredefinedColors = {
+    started: false,
+    element: null,
+
+    start() {
+        if (!this.started) {
+            this.element = document.getElementById('PredefColList');
+
+            for (const name in CSSColors) {
+                console.log(name);
+                const colItem = document.createElement('p');
+                colItem.innerHTML = name;
+                colItem.setAttribute('class', 'color-item');
+                colItem.style.backgroundColor = CSSColors[name];
+
+                this.element.appendChild(colItem);
+            }
+
+
+            this.started = true;
+        }
+    }
+
+} // end of PredefinedColors
+
 const RandomColor = {
     getColor () {
         return ColorObj.createHSLA (
@@ -1157,6 +1182,7 @@ const Master = {
             Blue.start();
             HSLAText.start();
             RGBAText.start();
+            PredefinedColors.start();
             Choice.start();
 
             this.curColor = MasterProps.initColor;

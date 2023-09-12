@@ -31,7 +31,7 @@
     background-color: white;
 }
 
-#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv, #RedDiv, #GreenDiv, #BlueDiv{
+#HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv, #RedDiv, #GreenDiv, #BlueDiv, #PredefColDiv{
     position: relative;
     overflow: visible;
     display: block;        
@@ -40,6 +40,14 @@
 
 #WheelSlider {
     position: absolute; 
+}
+
+#PredefColList {
+    width: 20%;
+    height: 300px;
+    overflow: scroll;
+    border: 1px solid black;
+    text-align: center;
 }
 
 .ranger {
@@ -66,6 +74,11 @@
 
 .ctrl-label {
     margin: 0.15em 0 0 0; 
+}
+
+.color-item {
+    border: 1px solid red;
+    margin: 0.2em;
 }
 
 h2,h5 {
