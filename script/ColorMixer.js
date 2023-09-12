@@ -47,7 +47,10 @@ const ColorWheel = {
 
             this.context2d = this.element.getContext("2d");
             this.getViewPort();
-            document.addEventListener('scroll', ()=>ColorWheel.onScroll());
+
+            document.addEventListener('scroll', ()=>this.onScroll());
+            window.addEventListener('resize', ()=>this.onResize());
+            
 
             this.element.addEventListener('mousedown',
                                (event) => {
@@ -122,6 +125,10 @@ const ColorWheel = {
     },
 
     onScroll() {
+        this.getViewPort();
+    },
+
+    onResize() {
         this.getViewPort();
     },
 
@@ -1154,6 +1161,7 @@ const Master = {
 
             this.curColor = MasterProps.initColor;
             this.updateControls(null);
+            
             this.started = true;
         }
     },
