@@ -1436,6 +1436,9 @@ class RangeControl {
             this.#element.addEventListener('blur',    () => this.#onBlur());
             this.#element.addEventListener('keydown', (event) => this.#onKeydown(event));
 
+            document.addEventListener('scroll', () => this.#onScroll());
+            window.addEventListener('resize', () => this.#onResize());
+
             ['mouseup', 'mouseleave'].forEach(
                 // the same handler for the a few events
                 eventName => {            
@@ -1501,6 +1504,13 @@ class RangeControl {
         }
     }
 
+    #onScroll() {
+        this.#getViewPort();
+    }
+
+    #onResize() {
+        this.#getViewPort();
+    }
 
     #getViewPort() {
         this.#rect = this.#element.getBoundingClientRect();
