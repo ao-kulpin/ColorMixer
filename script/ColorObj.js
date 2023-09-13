@@ -78,18 +78,43 @@ class RGBAObj {
 
 }
 
-// HSL/RGB container, immutable object
+// Hex with with Alpha (#RRBBGGAA) container, immutable object
+
+class HexAObj {
+    #value = '#00000000';
+
+    constructor(val) {     
+        this.#value = (val === undefined ? '#00000000' : val);
+    }
+
+    get value() {
+        return this.#value
+    }
+
+    toString() {
+        return this.#value;
+    }
+}
+
+// HSL/RGB/Hex container, immutable object
 
 class ColorObj {
     #hslaObj = new HSLAObj();
     #rgbaObj = new RGBAObj();
+    #hexaObj = new HexAObj();
 
     constructor (srcObj) {
         if (srcObj instanceof HSLAObj) {
             this.#hslaObj = srcObj;
             this.#rgbaFromHsla();
+            this.#hexaFromRbga();
         } else if (srcObj instanceof RGBAObj) {
             this.#rgbaObj = srcObj;
+            this.#hslaFromRbg();
+            this.#hexaFromRbga();
+        } else if (srcObj instanceof HexAObj) {
+            this.#hexaObj = srcObj;
+            this.#rbgaFromHexa();
             this.#hslaFromRbg();
         }
     }
@@ -116,6 +141,15 @@ class ColorObj {
     static createRGBA(r, g, b, a) {
         return new ColorObj(new RGBAObj(r, g, b, a));
     }
+
+    get hexa() {
+        return this.#hexaObj;
+    }
+
+    static createHEXA(hexa) {
+        return new ColorObj(new HexAObj(hexa));
+    }
+
 
     #rgbaFromHsla () {
         const {h, s: s100, l: l100, a} = this.#hslaObj;
@@ -150,6 +184,27 @@ class ColorObj {
             (100 * (2 * l - s)) / 2,
             a            
           );
+    }
+
+    #rbgaFromHexa() {
+        const hexa = this.#hexaObj.value;
+
+        const r = parseInt(hexa.substr(1, 2), 16); // hexa[0] == '#'
+        const g = parseInt(hexa.substr(3, 2), 16);
+        const b = parseInt(hexa.substr(5, 2), 16);
+        const ah = hexa.length == 7 ? 255 : parseInt(hexa.substr(7, 2), 16); 
+        this.#rgbaObj = new RGBAObj(r, b, g, ah/255);
+    }
+
+    #hexaFromRbga() {
+        const {r, g, b, a} = this.#rgbaObj;
+
+        const toHex2 = (n) => {
+            const h = Math.floor(n).toString(16);
+            return h.length < 2 ? '0' + h // add leading zero
+                                : h
+        }
+        this.HexAObj = new HexAObj('#' + toHex2(r) + toHex2(g) + toHex2(b) + toHex2(a));
     }
 
     static toBound(x) {
