@@ -1129,26 +1129,157 @@ const Choice = {
 const PredefinedColors = {
     started: false,
     element: null,
+    colorFullList: [],
+    selectedItem: null,
+    _color: null,
+
 
     start() {
         if (!this.started) {
             this.element = document.getElementById('PredefColList');
+            this.element.setAttribute('tabindex', '0'); // make the list focusable
 
             for (const name in CSSColors) {
-                console.log(name);
-                const colItem = document.createElement('p');
-                colItem.innerHTML = name;
-                colItem.setAttribute('class', 'color-item');
-                colItem.style.backgroundColor = CSSColors[name];
+                const color = ColorObj.createHEXA(CSSColors[name]);
+                const contrast = color.mostContrast();
+                this.colorFullList.push({
+                    name : name,
+                    color: color,
+                    contrast: contrast
+                });
+            }
+            this.fillList(this.colorFullList);                
 
-                this.element.appendChild(colItem);
+            this.element.addEventListener('focus', () => this.onFocus());            
+            this.element.addEventListener('blur',  () => this.onBlur());            
+            this.element.addEventListener('keydown', (event) => this.onKeydown(event));
+
             }
 
 
             this.started = true;
-        }
-    }
+        },
 
+    fillList(colorList) {
+        this.clearList();
+
+        colorList.forEach(
+            listItem => {
+                const {color, contrast} = listItem;
+                const colItem = document.createElement('p');
+                colItem.innerHTML = listItem.name;
+                colItem.setAttribute('class', 'color-item');
+                colItem.setAttribute('id', color.hexa.toString());
+                colItem.style.color = contrast.hexa.toString();
+                colItem.style.backgroundColor = color.hexa.toString();
+                // colItem.style.border = '1px solid ' + contrast.hexa.toString();
+
+                colItem.addEventListener('click', event => this.onClickItem(event));
+
+                this.element.appendChild(colItem);
+}
+        )
+    },
+
+    clearList() {
+        // Clear existing list
+        const children = this.element.children;
+        for (const child of children) {
+            child.remove();
+        }
+    },
+
+    onClickItem(event) {
+        console.log('onClickItem');
+        const itemElem = event.target;
+        this.selectItem(itemElem);
+    },
+
+    onFocus() {
+        this.element.style.border = '2px solid black';
+        if (this.selectedItem) {
+            this.scrollToSelected();
+        } 
+        else {
+            // select the first color if any
+            const firstItem = this.element.firstElementChild
+            if (firstItem) {
+                this.selectItem(firstItem);
+            }
+        }
+    },
+
+    onBlur() {
+        this.element.style.border = '1px solid gray';
+    },
+    
+    onKeydown(event) {
+        event.preventDefault();
+
+        if (!this.selectedItem) {
+            // do nothing
+            return;
+        }
+
+        switch (event.key) {
+            case 'ArrowUp':
+            case 'ArrowLeft': {
+                if (!this.selectedItem.previousElementSibling) {
+                    // do noting
+                    return;
+                }
+                this.selectItem(this.selectedItem.previousElementSibling);
+                break;
+            }
+            case 'ArrowDown':
+            case 'ArrowRight': {
+                if (!this.selectedItem.nextElementSibling) {
+                    // do noting
+                    return;
+                }
+                this.selectItem(this.selectedItem.nextElementSibling);
+                break;
+            }
+        }
+    },
+    
+    selectItem(itemElem) {
+        this.unselectItem();
+        const color = ColorObj.createHEXA(itemElem.getAttribute('id'));
+        const contrast = color.mostContrast();
+        itemElem.style.border = '3px solid ' + contrast.hexa.toString();
+
+        this.selectedItem = itemElem;
+        this.scrollToSelected();
+
+        this.yieldColor(color);
+    },
+
+    unselectItem() {
+        if (this.selectedItem) {
+            this.selectedItem.style.border = '';
+            this.selectedItem = null;
+        }
+    },
+
+    scrollToSelected() {
+        if (this.selectedItem) {
+            this.selectedItem.scrollIntoView({block: "nearest"});
+        }
+    },
+
+    yieldColor(color) {
+        this._color = color;
+        Master.onChangePredefs();
+    },
+
+    get color() {
+        return this._color;
+    },
+
+    set color (val) {
+        this._color = val;
+    }
 } // end of PredefinedColors
 
 const RandomColor = {
@@ -1248,6 +1379,11 @@ const Master = {
     onChangeRGBAText () {
         this.curColor = RGBAText.color;
         this.updateControls(RGBAText);
+    },
+
+    onChangePredefs() {
+        this.curColor = PredefinedColors.color;
+        this.updateControls(PredefinedColors);
     },
 
     updateControls(gameChanger) {

@@ -46,7 +46,7 @@
     width: 20%;
     height: 300px;
     overflow: scroll;
-    border: 1px solid black;
+    border: 1px solid gray;
     text-align: center;
 }
 
@@ -77,8 +77,10 @@
 }
 
 .color-item {
-    border: 1px solid red;
-    margin: 0.2em;
+    /* border: 1px solid red; */
+    margin: 0;
+    height: 1.5em;
+    color: black;
 }
 
 h2,h5 {

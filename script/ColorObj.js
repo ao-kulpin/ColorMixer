@@ -193,7 +193,7 @@ class ColorObj {
         const g = parseInt(hexa.substr(3, 2), 16);
         const b = parseInt(hexa.substr(5, 2), 16);
         const ah = hexa.length == 7 ? 255 : parseInt(hexa.substr(7, 2), 16); 
-        this.#rgbaObj = new RGBAObj(r, b, g, ah/255);
+        this.#rgbaObj = new RGBAObj(r, g, b, ah/255);
     }
 
     #hexaFromRbga() {
@@ -204,7 +204,7 @@ class ColorObj {
             return h.length < 2 ? '0' + h // add leading zero
                                 : h
         }
-        this.HexAObj = new HexAObj('#' + toHex2(r) + toHex2(g) + toHex2(b) + toHex2(a));
+        this.#hexaObj = new HexAObj('#' + toHex2(r) + toHex2(g) + toHex2(b) + toHex2(a * 255));
     }
 
     static toBound(x) {
