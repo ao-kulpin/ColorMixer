@@ -142,6 +142,10 @@ class ColorObj {
         return new ColorObj(new RGBAObj(r, g, b, a));
     }
 
+    resetRGBA({r = this.rgba.r, g = this.rgba.g, b = this.rgba.b, a = this.rgba.a}) {
+        ColorObj.createRGBA(r, g, b, a);
+    }
+
     get hexa() {
         return this.#hexaObj;
     }

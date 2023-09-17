@@ -1278,7 +1278,7 @@ const PredefinedColors = {
     },
 
     set color (val) {
-        this._color = val;
+        this._color = val.resetRGBA({a: 1}); // opaque color
     }
 } // end of PredefinedColors
 
