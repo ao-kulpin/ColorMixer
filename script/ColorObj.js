@@ -83,7 +83,16 @@ class RGBAObj {
 class HexAObj {
     #value = '#00000000';
 
-    constructor(val) {     
+    constructor(val) {
+        if (val === undefined) {
+            this.#value = '#00000000';
+        } else {
+            if (val.length === 7) {
+                // add alpha
+                val += 'ff';
+            }
+            this.#value = val;
+        }
         this.#value = (val === undefined ? '#00000000' : val);
     }
 
@@ -143,7 +152,7 @@ class ColorObj {
     }
 
     resetRGBA({r = this.rgba.r, g = this.rgba.g, b = this.rgba.b, a = this.rgba.a}) {
-        ColorObj.createRGBA(r, g, b, a);
+        return ColorObj.createRGBA(r, g, b, a);
     }
 
     get hexa() {
@@ -204,7 +213,7 @@ class ColorObj {
         const {r, g, b, a} = this.#rgbaObj;
 
         const toHex2 = (n) => {
-            const h = Math.floor(n).toString(16);
+            const h = Math.round(n).toString(16);
             return h.length < 2 ? '0' + h // add leading zero
                                 : h
         }

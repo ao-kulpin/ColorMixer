@@ -1192,7 +1192,9 @@ const PredefinedColors = {
     onClickItem(event) {
         console.log('onClickItem');
         const itemElem = event.target;
-        this.selectItem(itemElem);
+        const color = this.getColor(itemElem);
+        this.selectItem(itemElem, color);
+        this.yieldColor(color);
     },
 
     onFocus() {
@@ -1221,38 +1223,38 @@ const PredefinedColors = {
             return;
         }
 
+        let newItem = null;
         switch (event.key) {
             case 'ArrowUp':
             case 'ArrowLeft': {
-                if (!this.selectedItem.previousElementSibling) {
-                    // do noting
-                    return;
-                }
-                this.selectItem(this.selectedItem.previousElementSibling);
+                newItem = this.selectedItem.previousElementSibling;
                 break;
             }
             case 'ArrowDown':
             case 'ArrowRight': {
-                if (!this.selectedItem.nextElementSibling) {
-                    // do noting
-                    return;
-                }
-                this.selectItem(this.selectedItem.nextElementSibling);
+                newItem = this.selectedItem.nextElementSibling;
                 break;
             }
         }
+
+        if (newItem) {
+            const newColor = this.getColor(newItem);
+            this.selectItem(newItem, newColor);
+            this.yieldColor(newColor);
+        }
     },
     
-    selectItem(itemElem) {
+    selectItem(itemElem, color) {
         this.unselectItem();
-        const color = ColorObj.createHEXA(itemElem.getAttribute('id'));
         const contrast = color.mostContrast();
         itemElem.style.border = '3px solid ' + contrast.hexa.toString();
 
         this.selectedItem = itemElem;
         this.scrollToSelected();
+    },
 
-        this.yieldColor(color);
+    getColor(itemElem) {
+        return ColorObj.createHEXA(itemElem.getAttribute('id'));
     },
 
     unselectItem() {
@@ -1273,12 +1275,25 @@ const PredefinedColors = {
         Master.onChangePredefs();
     },
 
+    onChangeColor() {
+        const itemElem = document.getElementById(this._color.hexa.toString());
+        if( itemElem ) {
+            // predefined color is found
+            this.selectItem(itemElem, this.getColor(itemElem));
+        } else {
+            // predefined color is not found
+            this.unselectItem();
+        }
+
+    },
+
     get color() {
         return this._color;
     },
 
     set color (val) {
         this._color = val.resetRGBA({a: 1}); // opaque color
+        this.onChangeColor();
     }
 } // end of PredefinedColors
 
@@ -1432,6 +1447,10 @@ const Master = {
 
         if (gameChanger !== RGBAText) {
             RGBAText.color = this.curColor;         
+        }
+
+        if (gameChanger !== PredefinedColors) {
+            PredefinedColors.color = this.curColor;
         }
     }
 } // end of Master
