@@ -1310,7 +1310,7 @@ const RandomColor = {
 
 
 const MasterProps = {
-    initColor: ColorObj.createHSLA(37, 33, 70, 0.5)
+    initColor: ColorObj.createRGBA(127, 255, 212, 0.5) // aquamarine
 }
 
 const Master = {
