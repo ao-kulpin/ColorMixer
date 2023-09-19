@@ -1339,50 +1339,42 @@ const Master = {
     },
 
     onChangeColorWheel () {
-        const {l, a} = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(ColorWheel.hue, ColorWheel.saturation, l, a);
+        this.curColor = this.curColor.resetHSLA({h: ColorWheel.hue, s: ColorWheel.saturation});
         this.updateControls(ColorWheel);
     },
 
     onChangeHue () {
-        const {s, l, a} = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(Hue.value, s, l, a);
+        this.curColor = this.curColor.resetHSLA({h: Hue.value});
         this.updateControls(Hue);
     },
 
     onChangeSaturation () {
-        const {h, l, a} = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(h, Saturation.value, l, a);
+        this.curColor = this.curColor.resetHSLA({s: Saturation.value});
         this.updateControls(Saturation);
     },
 
     onChangeLightness () {
-        const {h, s, a} = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(h, s, Lightness.value, a);
+        this.curColor = this.curColor.resetHSLA({l: Lightness.value});
         this.updateControls(Lightness);
     },
 
     onChangeAlpha () {
-        const {h, s, l} = this.curColor.hsla;
-        this.curColor = ColorObj.createHSLA(h, s, l, Alpha.value);
+        this.curColor = this.curColor.resetHSLA({a: Alpha.value});
         this.updateControls(Alpha);
     },
 
     onChangeRed () {
-        const {g, b, a} = this.curColor.rgba;
-        this.curColor = ColorObj.createRGBA(Red.value, g, b, a);
+        this.curColor = this.curColor.resetRGBA({r: Red.value});
         this.updateControls(Red);
     },
 
     onChangeGreen () {
-        const {r, b, a} = this.curColor.rgba;
-        this.curColor = ColorObj.createRGBA(r, Green.value, b, a);
+        this.curColor = this.curColor.resetRGBA({g: Green.value});
         this.updateControls(Green);
     },
 
     onChangeBlue () {
-        const {r, g, a} = this.curColor.rgba;
-        this.curColor = ColorObj.createRGBA(r, g, Blue.value, a);
+        this.curColor = this.curColor.resetRGBA({b: Blue.value});
         this.updateControls(Blue);
     },
 
@@ -1397,7 +1389,7 @@ const Master = {
     },
 
     onChangePredefs() {
-        this.curColor = PredefinedColors.color;
+        this.curColor = PredefinedColors.color.resetRGBA({a: this.curColor.rgba.a});
         this.updateControls(PredefinedColors);
     },
 

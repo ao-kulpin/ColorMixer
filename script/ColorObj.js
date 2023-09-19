@@ -143,6 +143,11 @@ class ColorObj {
         return new ColorObj(new HSLAObj(h, s, l, a));
     }
 
+    resetHSLA({h = this.hsla.h, s = this.hsla.s, l = this.hsla.l, a = this.hsla.a}) {
+        return ColorObj.createHSLA(h, s, l, a);
+    }
+
+
     get rgba() {
         return this.#rgbaObj;
     }
