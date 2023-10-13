@@ -1126,6 +1126,10 @@ const Choice = {
     }
 }  // end of Choice
 
+const PredefColorsProps = {
+    blurColorName: '0px 0px 2px'
+}
+
 const PredefinedColors = {
     started: false,
     element: null,
@@ -1170,7 +1174,9 @@ const PredefinedColors = {
                 colItem.innerHTML = listItem.name;
                 colItem.setAttribute('class', 'color-item');
                 colItem.setAttribute('id', color.hexa.toString());
-                colItem.style.color = contrast.hexa.toString();
+                colItem.setAttribute('name', listItem.name);
+                colItem.style.color = '#00000000'; // transparent;
+                colItem.style.textShadow = PredefColorsProps.blurColorName + ' ' + contrast.hexa.toString();
                 colItem.style.backgroundColor = color.hexa.toString();
                 // colItem.style.border = '1px solid ' + contrast.hexa.toString();
 
@@ -1246,8 +1252,10 @@ const PredefinedColors = {
     
     selectItem(itemElem, color) {
         this.unselectItem();
-        const contrast = color.mostContrast();
-        itemElem.style.border = '3px solid ' + contrast.hexa.toString();
+        const contrast = color.mostContrast().hexa.toString();
+        itemElem.style.border = '3px solid ' + contrast;
+        itemElem.style.color = contrast;
+        itemElem.style.textShadow = 'none';
 
         this.selectedItem = itemElem;
         this.scrollToSelected();
@@ -1259,7 +1267,10 @@ const PredefinedColors = {
 
     unselectItem() {
         if (this.selectedItem) {
+            const shadowColor = this.getColor(this.selectedItem).mostContrast();
             this.selectedItem.style.border = '';
+            this.selectedItem.style.color = '#00000000'; // transparent
+            this.selectedItem.style.textShadow = PredefColorsProps.blurColorName + ' ' + shadowColor.hexa.toString();
             this.selectedItem = null;
         }
     },
