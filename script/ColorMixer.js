@@ -1128,6 +1128,7 @@ const Choice = {
 
 const PredefColorsProps = {
     blurColorName:  '0px 0px 2px',
+    blurColor: 0.8,
     selectedColorBorder: '3px solid',
     focusedBorder: '2px solid black',
     unfocusedBorder: '1px solid gray'
@@ -1178,8 +1179,12 @@ const PredefinedColors = {
                 colItem.setAttribute('id', color.hexa.toString());
                 colItem.setAttribute('name', listItem.name);
                 colItem.style.color = '#00000000'; // transparent;
+
+                // blur the color name
                 colItem.style.textShadow = PredefColorsProps.blurColorName + ' ' + contrast.hexa.toString();
-                colItem.style.backgroundColor = color.hexa.toString();
+
+                // blur the color
+                colItem.style.backgroundColor = color.resetRGBA({a: PredefColorsProps.blurColor}).hexa.toString();
 
                 colItem.addEventListener('click', event => this.onClickItem(event));
 
@@ -1252,7 +1257,12 @@ const PredefinedColors = {
     selectItem(itemElem, color) {
         this.unselectItem();
         const contrast = color.mostContrast().hexa.toString();
+        
+        // unblur the color
+        itemElem.style.backgroundColor = color.hexa.toString();
         itemElem.style.border = PredefColorsProps.selectedColorBorder + ' ' + contrast;
+
+        // unblur the color name
         itemElem.style.color = contrast;
         itemElem.style.textShadow = 'none';
 
@@ -1266,10 +1276,18 @@ const PredefinedColors = {
 
     unselectItem() {
         if (this.selectedItem) {
-            const shadowColor = this.getColor(this.selectedItem).mostContrast();
+            const color = this.getColor(this.selectedItem);
+            
+            const shadowColor = color.mostContrast();
             this.selectedItem.style.border = '';
             this.selectedItem.style.color = '#00000000'; // transparent
+
+            // blur the color name
             this.selectedItem.style.textShadow = PredefColorsProps.blurColorName + ' ' + shadowColor.hexa.toString();
+
+            // blur the color
+            this.selectedItem.style.backgroundColor = color.resetRGBA({a: PredefColorsProps.blurColor}).hexa.toString();
+
             this.selectedItem = null;
         }
     },
