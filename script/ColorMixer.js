@@ -1222,8 +1222,6 @@ const PredefinedColors = {
     },
     
     onKeydown(event) {
-        event.preventDefault();
-
         if (!this.selectedItem) {
             // do nothing
             return;
@@ -1247,6 +1245,7 @@ const PredefinedColors = {
             const newColor = this.getColor(newItem);
             this.selectItem(newItem, newColor);
             this.yieldColor(newColor);
+            event.preventDefault();
         }
     },
     
