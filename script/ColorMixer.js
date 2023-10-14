@@ -1127,7 +1127,10 @@ const Choice = {
 }  // end of Choice
 
 const PredefColorsProps = {
-    blurColorName: '0px 0px 2px'
+    blurColorName:  '0px 0px 2px',
+    selectedColorBorder: '3px solid',
+    focusedBorder: '2px solid black',
+    unfocusedBorder: '1px solid gray'
 }
 
 const PredefinedColors = {
@@ -1142,6 +1145,7 @@ const PredefinedColors = {
         if (!this.started) {
             this.element = document.getElementById('PredefColList');
             this.element.setAttribute('tabindex', '0'); // make the list focusable
+            this.element.style.border = PredefColorsProps.unfocusedBorder;
 
             for (const name in CSSColors) {
                 const color = ColorObj.createHEXA(CSSColors[name]);
@@ -1157,12 +1161,10 @@ const PredefinedColors = {
             this.element.addEventListener('focus', () => this.onFocus());            
             this.element.addEventListener('blur',  () => this.onBlur());            
             this.element.addEventListener('keydown', (event) => this.onKeydown(event));
+        }
 
-            }
-
-
-            this.started = true;
-        },
+        this.started = true;
+    },
 
     fillList(colorList) {
         this.clearList();
@@ -1178,7 +1180,6 @@ const PredefinedColors = {
                 colItem.style.color = '#00000000'; // transparent;
                 colItem.style.textShadow = PredefColorsProps.blurColorName + ' ' + contrast.hexa.toString();
                 colItem.style.backgroundColor = color.hexa.toString();
-                // colItem.style.border = '1px solid ' + contrast.hexa.toString();
 
                 colItem.addEventListener('click', event => this.onClickItem(event));
 
@@ -1196,7 +1197,6 @@ const PredefinedColors = {
     },
 
     onClickItem(event) {
-        console.log('onClickItem');
         const itemElem = event.target;
         const color = this.getColor(itemElem);
         this.selectItem(itemElem, color);
@@ -1204,7 +1204,7 @@ const PredefinedColors = {
     },
 
     onFocus() {
-        this.element.style.border = '2px solid black';
+        this.element.style.border = PredefColorsProps.focusedBorder;
         if (this.selectedItem) {
             this.scrollToSelected();
         } 
@@ -1212,13 +1212,13 @@ const PredefinedColors = {
             // select the first color if any
             const firstItem = this.element.firstElementChild
             if (firstItem) {
-                this.selectItem(firstItem);
+                this.selectItem(firstItem, this.getColor(firstItem));
             }
         }
     },
 
     onBlur() {
-        this.element.style.border = '1px solid gray';
+        this.element.style.border = PredefColorsProps.unfocusedBorder;
     },
     
     onKeydown(event) {
@@ -1253,7 +1253,7 @@ const PredefinedColors = {
     selectItem(itemElem, color) {
         this.unselectItem();
         const contrast = color.mostContrast().hexa.toString();
-        itemElem.style.border = '3px solid ' + contrast;
+        itemElem.style.border = PredefColorsProps.selectedColorBorder + ' ' + contrast;
         itemElem.style.color = contrast;
         itemElem.style.textShadow = 'none';
 
