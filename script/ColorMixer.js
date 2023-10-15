@@ -1140,6 +1140,7 @@ const PredefinedColors = {
     colorFullList: [],
     selectedItem: null,
     _color: null,
+    pageSize: 8,
 
 
     start() {
@@ -1157,7 +1158,9 @@ const PredefinedColors = {
                     contrast: contrast
                 });
             }
-            this.fillList(this.colorFullList);                
+            this.fillList(this.colorFullList);    
+            
+            this.pageSize = Math.floor(this.element.clientHeight / this.element.firstElementChild.clientHeight);
 
             this.element.addEventListener('focus', () => this.onFocus());            
             this.element.addEventListener('blur',  () => this.onBlur());            
@@ -1236,17 +1239,25 @@ const PredefinedColors = {
         switch (event.key) {
             case 'ArrowUp':
             case 'ArrowLeft': {
-                newItem = this.selectedItem.previousElementSibling;
+                newItem = this.goPrev(1);
+                break;
+            }
+            case 'PageUp': {
+                newItem = this.goPrev(this.pageSize);
                 break;
             }
             case 'ArrowDown':
             case 'ArrowRight': {
-                newItem = this.selectedItem.nextElementSibling;
+                newItem = this.goNext(1);
+                break;
+            }
+            case 'PageDown': {
+                newItem = this.goNext(this.pageSize);
                 break;
             }
         }
 
-        if (newItem) {
+        if (newItem && newItem != this.selectedItem) {
             const newColor = this.getColor(newItem);
             this.selectItem(newItem, newColor);
             this.yieldColor(newColor);
@@ -1254,10 +1265,30 @@ const PredefinedColors = {
         }
     },
     
+    goNext(itemNum) {
+        let item = this.selectedItem;
+        let lastNonNull = item;
+        while (item && itemNum--) {
+          lastNonNull = item;  
+          item = item.nextElementSibling          
+        }
+        return item || lastNonNull;
+    },
+
+    goPrev(itemNum) {
+        let item = this.selectedItem;
+        let lastNonNull = item;
+        while (item && itemNum--) {
+          lastNonNull = item;
+          item = item.previousElementSibling;          
+        }
+        return item || lastNonNull;
+    },
+
     selectItem(itemElem, color) {
         this.unselectItem();
         const contrast = color.mostContrast().hexa.toString();
-        
+
         // unblur the color
         itemElem.style.backgroundColor = color.hexa.toString();
         itemElem.style.border = PredefColorsProps.selectedColorBorder + ' ' + contrast;
