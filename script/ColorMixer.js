@@ -1183,13 +1183,36 @@ const PredefinedColors = {
         this.unselectItem();
         this.clearList();
 
+        const IdMaker = {
+            idSet: new Set(),
+            getUniqId(hexa) {
+                if (!this.checkAndAdd(hexa)) {
+                    return hexa;
+                }
+                for (suffix = 1; true; ++ suffix) {
+                    const probe = hexa + '_' + suffix;
+                    if (!this.checkAndAdd(probe)) {
+                        return probe;
+                    }
+                }
+                console.assert(false); // never executed
+
+            },
+
+            checkAndAdd(probe) {
+                const res = this.idSet.has(probe);
+                this.idSet.add(probe);
+                return res;
+            }
+        }
+
         colorList.forEach(
             listItem => {
                 const {color, contrast} = listItem;
                 const colItem = document.createElement('p');
                 colItem.innerHTML = listItem.name;
                 colItem.setAttribute('class', 'color-item');
-                colItem.setAttribute('id', color.hexa.toString());
+                colItem.setAttribute('id', IdMaker.getUniqId(color.hexa.toString()));
                 colItem.setAttribute('name', listItem.name);
                 colItem.style.color = '#00000000'; // transparent;
 
