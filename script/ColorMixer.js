@@ -1137,6 +1137,8 @@ const PredefColorsProps = {
 const PredefinedColors = {
     started: false,
     element: null,
+    elementFilter: null,
+    elementStatus: null,
     colorFullList: [],
     selectedItem: null,
     _color: null,
@@ -1148,6 +1150,10 @@ const PredefinedColors = {
             this.element = document.getElementById('PredefColList');
             this.element.setAttribute('tabindex', '0'); // make the list focusable
             this.element.style.border = PredefColorsProps.unfocusedBorder;
+
+            this.elementFilter = document.getElementById('ColorFilterText');
+            this.elementStatus = document.getElementById('ColorFilterStatus');
+
 
             for (const name in CSSColors) {
                 const color = ColorObj.createHEXA(CSSColors[name]);
@@ -1165,12 +1171,16 @@ const PredefinedColors = {
             this.element.addEventListener('focus', () => this.onFocus());            
             this.element.addEventListener('blur',  () => this.onBlur());            
             this.element.addEventListener('keydown', (event) => this.onKeydown(event));
+
+            this.elementFilter.addEventListener('input', (event) => this.onChangeFilter());
+
         }
 
         this.started = true;
     },
 
     fillList(colorList) {
+        this.unselectItem();
         this.clearList();
 
         colorList.forEach(
@@ -1192,15 +1202,17 @@ const PredefinedColors = {
                 colItem.addEventListener('click', event => this.onClickItem(event));
 
                 this.element.appendChild(colItem);
-}
-        )
+            }        
+        );
+        const listLength = colorList.length;
+        this.elementStatus.innerHTML = listLength + ' colors filtered:';
+        this.elementStatus.style.color = listLength === 0 ? 'red' : 'black';
     },
 
     clearList() {
         // Clear existing list
-        const children = this.element.children;
-        for (const child of children) {
-            child.remove();
+        while (this.element.firstElementChild) {
+            this.element.removeChild(this.element.lastElementChild);
         }
     },
 
@@ -1220,7 +1232,9 @@ const PredefinedColors = {
             // select the first color if any
             const firstItem = this.element.firstElementChild
             if (firstItem) {
-                this.selectItem(firstItem, this.getColor(firstItem));
+                const color =  this.getColor(firstItem);
+                this.selectItem(firstItem, color);
+                this.yieldColor(color);
             }
         }
     },
@@ -1265,6 +1279,28 @@ const PredefinedColors = {
         }
     },
     
+    onChangeFilter() {
+        const filterText = this.elementFilter.value;
+        const re = new RegExp(filterText);
+        const filteredList = this.filterList(re);
+        this.fillList(filteredList);
+        this.onChangeColor();
+    },
+
+    filterList(regExp) {
+        let filteredList = [];
+
+        this.colorFullList.forEach (
+            item => {
+                if (regExp.test(item.name)) {
+                    filteredList.push(item);
+                }
+            }
+        );
+
+        return filteredList;
+    },
+
     goNext(itemNum) {
         let item = this.selectedItem;
         let lastNonNull = item;
@@ -1343,7 +1379,6 @@ const PredefinedColors = {
             // predefined color is not found
             this.unselectItem();
         }
-
     },
 
     get color() {
