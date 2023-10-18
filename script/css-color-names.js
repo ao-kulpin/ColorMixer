@@ -41,6 +41,7 @@ const CSSColors = {
   "darkviolet": "#9400d3",
   "deeppink": "#ff1493",
   "deepskyblue": "#00bfff",
+  "dimgray": "#696969",
   "dimgrey": "#696969",
   "dodgerblue": "#1e90ff",
   "firebrick": "#b22222",
