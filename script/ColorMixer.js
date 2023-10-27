@@ -47,7 +47,6 @@ const ColorWheel = {
             document.addEventListener('scroll', ()=>this.onScroll());
             window.addEventListener('resize', ()=>this.onResize());
             
-
             this.element.addEventListener('mousedown',
                                (event) => {
                                     const x = event.clientX;
@@ -870,13 +869,10 @@ const Choice = {
         if (!this.started) {
             this.element = document.getElementById('Choice');
 
-            // Fix size of the canvas
-            this.element.width = this.element.clientWidth;
-            this.element.height = this.element.clientHeight;
+            this.setupViewPort();
 
-            this.context2d = this.element.getContext("2d");
-            this.getViewPort();
-            this.getCenters();
+            document.addEventListener('scroll', ()=>this.onScroll());
+            window.addEventListener('resize', ()=>this.onResize());
 
             this.started = true;
         }
@@ -891,11 +887,20 @@ const Choice = {
         this.draw();
     },
 
-    getViewPort() {
+    setupViewPort() {
         this.rect = this.element.getBoundingClientRect();
+        
+        // Fix size of the canvas
+
+        this.element.width = this.rect.width;
+        this.element.height = this.rect.height;
+        
+        this.context2d = this.element.getContext("2d");
+
+        this.setupCenters();
     },
 
-    getCenters() {
+    setupCenters() {
         this.circleR = this.rect.width * ChoiceProps.circleR;
 
         const triangleSide = this.rect.width * ChoiceProps.triangleSide;
@@ -915,6 +920,16 @@ const Choice = {
         this.blueCenterY = this.greenCenterY;
         this.blueCirclePath = new Path2D;
         this.blueCirclePath.arc(this.blueCenterX, this.blueCenterY, this.circleR, 0, 2 * Math.PI)
+    },
+
+    onScroll() {
+        this.setupViewPort();
+        this.draw();
+    },
+
+    onResize() {
+        this.setupViewPort();
+        this.draw();
     },
 
     draw() {

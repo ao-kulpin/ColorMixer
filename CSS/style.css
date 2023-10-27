@@ -24,7 +24,7 @@
 }
 
 #Choice {
-    background-color: rosybrown;
+    background-color: white;
 }
 
 #HueDiv, #SaturationDiv, #LightDiv, #AlphaDiv, #HSLATextDiv,  #RGBATextDiv, #RedDiv, #GreenDiv, #BlueDiv, #PredefColDiv{
