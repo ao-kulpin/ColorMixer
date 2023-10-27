@@ -21,7 +21,8 @@ const SliderProps = {
 const ColorWheelProps = {
     hueFont:        'bold 14px Arial sans-serif',
     saturationFont: 'bold 14px Arial sans-serif',
-    saturationTextMargin: 0.3
+    saturationTextMargin: 0.3,
+    wheelR: 0.38
 }
 
 const ColorWheel = {
@@ -41,12 +42,7 @@ const ColorWheel = {
         if (!this.started) {
             this.element = document.getElementById('ColorWheel');
 
-            // Fix size of the canvas
-            this.element.width = this.element.clientWidth;
-            this.element.height = this.element.clientHeight;
-
-            this.context2d = this.element.getContext("2d");
-            this.getViewPort();
+            this.setupViewPort();
 
             document.addEventListener('scroll', ()=>this.onScroll());
             window.addEventListener('resize', ()=>this.onResize());
@@ -125,20 +121,30 @@ const ColorWheel = {
     },
 
     onScroll() {
-        this.getViewPort();
+        this.setupViewPort();
+        this.draw();
     },
 
     onResize() {
-        this.getViewPort();
+        this.setupViewPort();
+        this.draw();
     },
 
-    getViewPort() {
+    setupViewPort() {
         this.rect = this.element.getBoundingClientRect();
+
+        // Fix size of the canvas
+        this.element.width = this.rect.width;
+        this.element.height = this.rect.height;
+
+        this.context2d = this.element.getContext("2d");
 
         this.centerX = (this.rect.left + this.rect.right) / 2;
         this.centerY = (this.rect.top + this.rect.bottom) / 2;
 
-        this.wheelR = this.rect.height * 0.41;
+        this.wheelR = this.rect.height * ColorWheelProps.wheelR;
+
+        this.sliderReset();
     },
 
     getHueAndSaturation(x, y) {
