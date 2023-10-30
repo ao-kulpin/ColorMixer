@@ -19,10 +19,11 @@ const SliderProps = {
 }
 
 const ColorWheelProps = {
-    hueFont:        'bold 14px Arial sans-serif',
-    saturationFont: 'bold 14px Arial sans-serif',
+    hueFont:        'bold {font-size}px Arial serif',
+    saturationFont: 'bold {font-size}px Arial serif',
     saturationTextMargin: 0.3,
-    wheelR: 0.38
+    wheelR: 0.38,
+    fontSize: 0.03
 }
 
 const ColorWheel = {
@@ -313,7 +314,7 @@ const ColorWheel = {
     drawHueText() {
         const ctx = this.context2d;
         const text = ` H=${this._hue.toFixed()}\xB0 `;
-        ctx.font = ColorWheelProps.hueFont;
+        ctx.font = ColorWheelProps.hueFont.replace("{font-size}", this.rect.height * ColorWheelProps.fontSize);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'black';
@@ -333,7 +334,7 @@ const ColorWheel = {
     drawSaturationText(color) {  // rotated with ray 2
         const ctx = this.context2d;
         const text = `S=${this._saturation.toFixed()}%`;
-        ctx.font = ColorWheelProps.saturationFont;
+        ctx.font = ColorWheelProps.saturationFont.replace("{font-size}", this.rect.height * ColorWheelProps.fontSize);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = color;
