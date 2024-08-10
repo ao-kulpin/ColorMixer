@@ -835,9 +835,9 @@ const ChoiceProps = {
     bacgroundBorderStyle: 'white',
     bacgroundColor: 'black',
     borderDash: [1, 0],
-    tailMargin: 0.005,
-    tailRowSize: 3,
-    tailCornerR: 0.08,
+    tailMargin: 0.007,
+    tailRowSize: 5,
+    tailCornerR: 0.02,
 
     triangleSide: 0.2,
     circleR: 0.3,
@@ -1037,7 +1037,8 @@ const Choice = {
         const cornerR = width * ChoiceProps.cornerR; 
 
         this.drawRoundedSquare(side, ident, ident, cornerR, 
-                ChoiceProps.bacgroundColor, ChoiceProps.bacgroundBorderStyle, ChoiceProps.borderWidth,
+                ChoiceProps.bacgroundColor, ChoiceProps.bacgroundBorderStyle, 
+                ChoiceProps.borderWidth,
                 ChoiceProps.borderDash);
 
         // pave the background with colored tails
@@ -1053,7 +1054,8 @@ const Choice = {
                 const tailIdentX = ident + tailMargin + col * tailSideMargin;
    
                 this.drawRoundedSquare(tailSide, tailIdentX, tailIdentY, tailCornerR, 
-                                        RandomColor.getColor().hsla.toString());    
+                    // RandomColor.getColor().hsla.toString());    
+                    PredictableColor.getColor().hsla.toString());    
             }
         }      
     },
@@ -1092,6 +1094,8 @@ const Choice = {
         const circleSideR = this.circleR + tailSideR;
         const circleSideR2 = MyMath.square(circleSideR);
 
+        PredictableColor.clear();
+
         for (let row = 0; row < ChoiceProps.tailRowSize; ++row) {
             const tailIdentY = paveTop - tailMargin + row * tailSideMargin;
             for (let col = 0; col < ChoiceProps.tailRowSize; ++col) {
@@ -1100,7 +1104,8 @@ const Choice = {
                 if( this.overlapCircles(tailIdentX + tailSide_2, 
                                         tailIdentY + tailSide_2, circleSideR2) ) {
                     this.drawRoundedSquare(tailSide, tailIdentX, tailIdentY, tailCornerR, 
-                                        RandomColor.getColor().hsla.toString());
+                                        //RandomColor.getColor().hsla.toString());
+                                        PredictableColor.getColor().rgba.toString());
                 }
             }
         }      
@@ -1138,7 +1143,7 @@ const Choice = {
         ctx.arcTo(x1, y1, x2, y2, cornerR);
         ctx.arcTo(x2, y2, x3, y3, cornerR);
         ctx.arcTo(x3, y3, x4, y4, cornerR);
-        ctx.arcTo(x4, y4, x0, y0, cornerR);
+        ctx.arcTo(x4, y4, x1, y1, cornerR);
         ctx.lineTo(x0, y0);
         if (borderColor !== undefined) {
             ctx.stroke();
@@ -1446,6 +1451,33 @@ const RandomColor = {
                 );
     }
 } // end of RandomColor
+
+const PredictableColor = { // generates 25 regular colors
+    rIndex: 0,
+    gIndex: 0,
+    bIndex: 0,
+
+    clear() {
+        this.rIndex = 0;
+        this.gIndex = 0;
+        this.bIndex = 0;
+    },
+
+    getColor() {
+        const incMod3 = (x) => (x + 1) % 3;
+        const vals = [0, 127, 255]
+        this.bIndex = incMod3(this.bIndex);
+        if (this.bIndex == 0) {
+            this.gIndex = incMod3(this.gIndex);
+            if (this.gIndex == 0) {
+                this.rIndex = incMod3(this.rIndex)
+            }
+        }
+        return ColorObj.createRGBA (
+            vals[this.rIndex], vals[this.gIndex], vals[this.bIndex], 1);
+    }
+
+}  // end of PredictableColor
 
 
 const MasterProps = {
