@@ -314,7 +314,8 @@ const ColorWheel = {
     drawHueText() {
         const ctx = this.context2d;
         const text = ` H=${this._hue.toFixed()}\xB0 `;
-        ctx.font = ColorWheelProps.hueFont.replace("{font-size}", this.rect.height * ColorWheelProps.fontSize);
+        ctx.font = ColorWheelProps.hueFont.replace("{font-size}", 
+                                    this.rect.height * ColorWheelProps.fontSize);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = 'black';
@@ -349,9 +350,11 @@ const ColorWheel = {
         const turnOverText = this._hue > 90 && this.hue < 270;
         const x = leftFromSlider 
                         // text is left from the slider
-                        ? centerX + this.sliderR - SliderProps.radius1 - margin - width/2
+                        ? centerX + this.sliderR - SliderProps.radius1 - 
+                            margin - width/2
                         // text is right from the slider
-                        : centerX + this.sliderR + SliderProps.radius1 + margin + width/2;
+                        : centerX + this.sliderR + SliderProps.radius1 + 
+                            margin + width/2;
         const y = aboveRay 
                         // text is above ray 2
                         ? centerY - margin - height / 2
@@ -841,7 +844,12 @@ const ChoiceProps = {
 
     triangleSide: 0.2,
     circleR: 0.3,
-    circleBorder: 15
+    circleBorder: 15,
+
+    colorTitle: "Chosen Color",
+    colorFont:  "bold {font-size}px Arial serif",
+    colorFontSize: 0.05,
+    rbgTitleShift: 1 //2.9 // 3.3
 }
 
 const Choice = {
@@ -939,6 +947,7 @@ const Choice = {
          this.drawRoundBackground();
         // this.drawChoice();
         this.drawCircles();
+        this.drawColorTitle();
     },
 
     drawChoice() {
@@ -1029,6 +1038,36 @@ const Choice = {
 
         
     },
+
+    drawColorTitle() {
+        const ctx = this.context2d;
+        ctx.font = ChoiceProps.colorFont.replace("{font-size}", 
+                                    this.rect.height * ChoiceProps.colorFontSize);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = this.color.mostContrast().resetRGBA({a: 1}).rgba.toString();
+        ctx.fillText(ChoiceProps.colorTitle, 
+                        this.rect.width / 2, this.rect.height * 0.55);
+
+        const centerX = this.rect.width / 2;
+        const centerY = this.rect.height / 2;
+        const rbgShift = ChoiceProps.rbgTitleShift;
+
+        ctx.fillStyle = this.color.resetRGBA({g: 0, b:0, a: 1}).mostContrast().rgba.toString();
+        ctx.fillText("R", 
+            centerX + (this.redCenterX - centerX) * rbgShift,
+            centerY + (this.redCenterY - centerY) * rbgShift);   
+
+        ctx.fillStyle = this.color.resetRGBA({r: 0, b:0, a: 1}).mostContrast().rgba.toString();
+        ctx.fillText("G", 
+                centerX + (this.greenCenterX - centerX) * rbgShift,
+                centerY + (this.greenCenterY - centerY) * rbgShift);   
+
+        ctx.fillStyle = this.color.resetRGBA({r: 0, g:0, a: 1}).mostContrast().rgba.toString();
+        ctx.fillText("B", 
+                        centerX + (this.blueCenterX - centerX) * rbgShift,
+                        centerY + (this.blueCenterY - centerY) * rbgShift);   
+                },
 
     drawRectBackground() {
         const width = this.rect.width;
