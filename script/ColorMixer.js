@@ -1654,19 +1654,19 @@ function parseHSLA(text) {
         return null;
     }
 
-    const hueStr = text.substr(text.indexOf('(') + 1);
+    const hueStr = text.substring(text.indexOf('(') + 1);
     const hue = parseInt(hueStr, 10);
 
-    const satStr = hueStr.substr(hueStr.indexOf(',') + 1);
+    const satStr = hueStr.substring(hueStr.indexOf(',') + 1);
     const sat = parseInt(satStr, 10);
 
-    const lightStr = satStr.substr(satStr.indexOf(',') + 1);
+    const lightStr = satStr.substring(satStr.indexOf(',') + 1);
     const light = parseInt(lightStr, 10);
 
     let alpha = 1;
     const alphaIndex = lightStr.indexOf(',');
     if (alphaIndex != -1) {
-        const alphaStr = lightStr.substr(alphaIndex + 1);
+        const alphaStr = lightStr.substring(alphaIndex + 1);
         alpha = parseFloat(alphaStr);
     }
 
@@ -1683,19 +1683,19 @@ function parseRGBA(text) {
         return null;
     }
 
-    const redStr = text.substr(text.indexOf('(') + 1);
+    const redStr = text.substring(text.indexOf('(') + 1);
     const red = parseInt(redStr, 10);
 
-    const greenStr = redStr.substr(redStr.indexOf(',') + 1);
+    const greenStr = redStr.substring(redStr.indexOf(',') + 1);
     const green = parseInt(greenStr, 10);
 
-    const blueStr = greenStr.substr(greenStr.indexOf(',') + 1);
+    const blueStr = greenStr.substring(greenStr.indexOf(',') + 1);
     const blue = parseInt(blueStr, 10);
 
     let alpha = 1;
     const alphaIndex = blueStr.indexOf(',');
     if (alphaIndex != -1) {
-        const alphaStr = blueStr.substr(alphaIndex + 1);
+        const alphaStr = blueStr.substring(alphaIndex + 1);
         alpha = parseFloat(alphaStr);
     }
 

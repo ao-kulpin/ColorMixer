@@ -207,10 +207,10 @@ class ColorObj {
     #rbgaFromHexa() {
         const hexa = this.#hexaObj.value;
 
-        const r = parseInt(hexa.substr(1, 2), 16); // hexa[0] == '#'
-        const g = parseInt(hexa.substr(3, 2), 16);
-        const b = parseInt(hexa.substr(5, 2), 16);
-        const ah = hexa.length == 7 ? 255 : parseInt(hexa.substr(7, 2), 16); 
+        const r = parseInt(hexa.substring(1, 3), 16); // hexa[0] == '#'
+        const g = parseInt(hexa.substring(3, 5), 16);
+        const b = parseInt(hexa.substring(5, 7), 16);
+        const ah = hexa.length == 7 ? 255 : parseInt(hexa.substring(7, 9), 16); 
         this.#rgbaObj = new RGBAObj(r, g, b, ah/255);
     }
 
