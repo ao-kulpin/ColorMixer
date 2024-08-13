@@ -846,10 +846,11 @@ const ChoiceProps = {
     circleR: 0.3,
     circleBorder: 15,
 
-    colorTitle: "Chosen Color",
+    // colorTitle: "Chosen Color",
     colorFont:  "bold {font-size}px Arial serif",
-    colorFontSize: 0.05,
-    rbgTitleShift: 1 //2.9 // 3.3
+    colorMinFontSize: 0.04,
+    colorMaxFontSize: 0.13,
+    rbgTitleShift: 2.8 
 }
 
 const Choice = {
@@ -928,7 +929,10 @@ const Choice = {
         this.blueCenterX = this.greenCenterX + triangleSide;
         this.blueCenterY = this.greenCenterY;
         this.blueCirclePath = new Path2D;
-        this.blueCirclePath.arc(this.blueCenterX, this.blueCenterY, this.circleR, 0, 2 * Math.PI)
+        this.blueCirclePath.arc(this.blueCenterX, this.blueCenterY, this.circleR, 0, 2 * Math.PI);
+
+        this.triangleCenterX = this.redCenterX;
+        this.triangleCenterY = this.redCenterY + triangleHeight * 2 / 3;
     },
 
     onScroll() {
@@ -947,7 +951,7 @@ const Choice = {
          this.drawRoundBackground();
         // this.drawChoice();
         this.drawCircles();
-        this.drawColorTitle();
+        this.drawColorTitles();
     },
 
     drawChoice() {
@@ -1039,34 +1043,43 @@ const Choice = {
         
     },
 
-    drawColorTitle() {
+    drawColorTitles() {
         const ctx = this.context2d;
-        ctx.font = ChoiceProps.colorFont.replace("{font-size}", 
-                                    this.rect.height * ChoiceProps.colorFontSize);
+        const minFontSize = this.rect.height * ChoiceProps.colorMinFontSize;
+        const diffFontSize = this.rect.height * ChoiceProps.colorMaxFontSize 
+                                                            - minFontSize;
+        const {r, g, b} = this.color.rgba;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = this.color.mostContrast().resetRGBA({a: 1}).rgba.toString();
-        ctx.fillText(ChoiceProps.colorTitle, 
+        ctx.font = ChoiceProps.colorFont.replace("{font-size}", 
+                        minFontSize + diffFontSize * (r + g + b) / (255 * 3));
+        ctx.fillText("R G B", // ChoiceProps.colorTitle, 
                         this.rect.width / 2, this.rect.height * 0.55);
 
-        const centerX = this.rect.width / 2;
-        const centerY = this.rect.height / 2;
+        const [centerX, centerY] = [this.triangleCenterX, this.triangleCenterY];
         const rbgShift = ChoiceProps.rbgTitleShift;
 
         ctx.fillStyle = this.color.resetRGBA({g: 0, b:0, a: 1}).mostContrast().rgba.toString();
+        ctx.font = ChoiceProps.colorFont.replace("{font-size}", 
+                        minFontSize + diffFontSize * r / 255);
         ctx.fillText("R", 
             centerX + (this.redCenterX - centerX) * rbgShift,
             centerY + (this.redCenterY - centerY) * rbgShift);   
 
         ctx.fillStyle = this.color.resetRGBA({r: 0, b:0, a: 1}).mostContrast().rgba.toString();
+        ctx.font = ChoiceProps.colorFont.replace("{font-size}", 
+                        minFontSize + diffFontSize * g / 255);
         ctx.fillText("G", 
                 centerX + (this.greenCenterX - centerX) * rbgShift,
                 centerY + (this.greenCenterY - centerY) * rbgShift);   
 
         ctx.fillStyle = this.color.resetRGBA({r: 0, g:0, a: 1}).mostContrast().rgba.toString();
+        ctx.font = ChoiceProps.colorFont.replace("{font-size}", 
+                        minFontSize + diffFontSize * b / 255);
         ctx.fillText("B", 
-                        centerX + (this.blueCenterX - centerX) * rbgShift,
-                        centerY + (this.blueCenterY - centerY) * rbgShift);   
+                centerX + (this.blueCenterX - centerX) * rbgShift,
+                centerY + (this.blueCenterY - centerY) * rbgShift);   
                 },
 
     drawRectBackground() {
