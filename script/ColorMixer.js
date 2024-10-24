@@ -1325,14 +1325,26 @@ const PredefinedColors = {
         this.yieldColor(color);
     },
 
+    getFirstVisibleItem() {
+        const firstItem = this.element.firstElementChild;
+        if (!firstItem)
+            return null;
+        const {top:firstTop} = firstItem.getBoundingClientRect();
+        let item = firstItem
+        while (item) {
+            const {top:itemTop} = item.getBoundingClientRect();
+            if (itemTop - firstTop >= this.element.scrollTop)
+                return item;
+            item = item.nextElementSibling;
+        }
+        return false;
+    },
+
     onFocus() {
         this.element.style.border = PredefColorsProps.focusedBorder;
-        if (this.selectedItem) {
-            this.scrollToSelected();
-        } 
-        else {
-            // select the first color if any
-            const firstItem = this.element.firstElementChild
+        if (!this.selectedItem) {
+            // select the first visible color if any
+            const firstItem = this.getFirstVisibleItem();
             if (firstItem) {
                 const color =  this.getColor(firstItem);
                 this.selectItem(firstItem, color);
