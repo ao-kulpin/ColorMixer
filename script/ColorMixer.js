@@ -1216,6 +1216,7 @@ const PredefColorsProps = {
 const PredefinedColors = {
     started: false,
     element: null,
+    rect: null,
     elementFilter: null,
     elementStatus: null,
     colorFullList: [],
@@ -1223,12 +1224,13 @@ const PredefinedColors = {
     _color: null,
     pageSize: 8,
 
-
     start() {
         if (!this.started) {
             this.element = document.getElementById('PredefColList');
             this.element.setAttribute('tabindex', '0'); // make the list focusable
             this.element.style.border = PredefColorsProps.unfocusedBorder;
+
+            this.rect = this.element.getBoundingClientRect();
 
             this.elementFilter = document.getElementById('ColorFilterText');
             this.elementStatus = document.getElementById('ColorFilterStatus');
@@ -1321,14 +1323,18 @@ const PredefinedColors = {
     onClickItem(event) {
         const itemElem = event.target;
         const color = this.getColor(itemElem);
+
+        const {r, g, b} = color.rgba;
+        console.log(`OnClickItem(${r} ${g} ${b})`)
         this.selectItem(itemElem, color);
         this.yieldColor(color);
     },
 
     onFocus() {
+        console.log("onFocus()")
         this.element.style.border = PredefColorsProps.focusedBorder;
         if (this.selectedItem) {
-            this.scrollToSelected();
+      ///////      this.scrollToSelected();
         } 
         else {
             // select the first color if any
@@ -1463,7 +1469,23 @@ const PredefinedColors = {
 
     scrollToSelected() {
         if (this.selectedItem) {
-            this.selectedItem.scrollIntoView({block: "nearest"});
+            console.log(`scrollToSelected1(${this.element.scrollTop})`)
+            this.rect = this.element.getBoundingClientRect(); //////////////////////
+            const selRect = this.selectedItem.getBoundingClientRect();
+            //console.log(`itemRect ${itemRect.top} ${itemRect.height}`);
+
+            const {top:selTop, bottom:selBot} = selRect;
+            console.log(`client top ${selTop} bot ${selBot} rect top ${this.rect.top} bot ${this.rect.bottom}`);
+            //console.log(`sel top ${selTop} bot ${it} rect top ${this.rect.top} bot ${this.rect.bottom}`);
+            if (selTop < this.rect.top || selBot > this.rect.bottom) {
+                    //console.log(`first child ${this.element.firstElementChild.innerHTML} ${typeof(this.element.firstElementChild)}`)
+                    //const firstRect = this.element.firstElementChild.getBoundingClientRect();
+                    const firstTop = this.element.firstElementChild.getBoundingClientRect().top;
+                    this.element.scrollTop = selTop - firstTop;
+                }
+
+            ////////this.selectedItem.scrollIntoView({block: "nearest"});
+            console.log(`scrollToSelected2(${this.element.scrollTop})`)
         }
     },
 
